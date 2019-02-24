@@ -88,7 +88,8 @@ public class Menu {
                             biblioteka.wyswietl5NajczesciejWypozyczanych();
                             break;
                         case 3:
-
+                            System.out.println();
+                            biblioteka.wyswietl5NajpopularniejszychKategorie();
                             break;
                         case 4:
 

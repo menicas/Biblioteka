@@ -2,12 +2,12 @@ package projektbiblioteka;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Scanner;
 
 public class Biblioteka {
 
     private final ArrayList<Ksiazka> ksiazki = new ArrayList<>();
+    private final ArrayList<String> istniejaceKategorie = new ArrayList<>();
     private int ileKsiazek;
     private int ileObecnieWypozyczonych = 0;
     private int ileWszystkichWypozyczen = 0;
@@ -129,15 +129,11 @@ public class Biblioteka {
         for(int i = 0; i < najczesciejWypozyczane.length; i++){
             najczesciejWypozyczane[i] = ksiazki.get(0);
         }
-
         for(Ksiazka k : ksiazki){
-            System.out.println(k.zwrocTytul());
             Ksiazka temp = k;
             for (int i = 0; i < najczesciejWypozyczane.length; i++){
                 Ksiazka  temp1;
                 if(temp.zwrocLiczbeWypozyczen() > najczesciejWypozyczane[i].zwrocLiczbeWypozyczen()){
-                    System.out.println("porownywane: " + temp.zwrocTytul() + "..." + najczesciejWypozyczane[i].zwrocTytul());
-                    System.out.println(temp.zwrocLiczbeWypozyczen() + "..." + najczesciejWypozyczane[i].zwrocLiczbeWypozyczen());
                     temp1 = najczesciejWypozyczane[i];
                     najczesciejWypozyczane[i] = temp;
                     temp = temp1;
@@ -147,6 +143,10 @@ public class Biblioteka {
         for(Ksiazka k : najczesciejWypozyczane){
             this.wyswietlSkroconaKsiazke(k.zwrocId());
         }
+    }
+
+    public void wyswietl5NajpopularniejszychKategorie(){
+
     }
 
     public void wypozyczKsiazke(int id){
@@ -216,6 +216,11 @@ public class Biblioteka {
 
     private void zapisDoPliku(Ksiazka k){
         String[] tabKategori = k.zwrocKategorie().split(";");
+        for(String kategoria : tabKategori){
+            if(!istniejaceKategorie.contains(kategoria)){
+                istniejaceKategorie.add(kategoria);
+            }
+        }
         String dane = String.format("%s, %s; %s; %d; ", k.zwrocImionaAutora(), k.zwrocNazwiskoAutora(), k.zwrocTytul(), k.zwrocRok());
         for(String s : tabKategori){
             dane += s + ", ";
@@ -240,5 +245,15 @@ public class Biblioteka {
         int rok = Integer.parseInt(data[2]);
         String kategorie = data[3].replaceAll(", ", ";");
         ksiazki.add(new Ksiazka(tytul, imiona, nazwisko, rok, kategorie));
+        //dodaj kategorie do tablicy istniejaceKategorie
+        String[] tabKategori = kategorie.split(";");
+        for(String k : tabKategori){
+            System.out.println(k);
+        }
+        for(String kategoria : tabKategori){
+            if(!istniejaceKategorie.contains(kategoria)){
+                istniejaceKategorie.add(kategoria);
+            }
+        }
     }
 }
