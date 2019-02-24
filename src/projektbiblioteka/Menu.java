@@ -89,7 +89,7 @@ public class Menu {
                             break;
                         case 3:
                             System.out.println();
-                            biblioteka.wyswietl5NajpopularniejszychKategorie();
+                            biblioteka.wyswietl5NajpopularniejszychWKategorii();
                             break;
                         case 4:
 

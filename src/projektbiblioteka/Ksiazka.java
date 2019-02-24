@@ -1,6 +1,9 @@
 package projektbiblioteka;
 
-public class Ksiazka {
+
+import org.jetbrains.annotations.NotNull;
+
+public class Ksiazka implements Comparable{
     
     private static int id = 0;
 
@@ -74,5 +77,11 @@ public class Ksiazka {
     }
     public int zwrocId(){
         return this.bookId;
+    }
+
+    @Override
+    public int compareTo(Object k) {
+        int wypozyczenia = ((Ksiazka)k).zwrocLiczbeWypozyczen();
+        return wypozyczenia - this.liczbaWypozyczen;
     }
 }
