@@ -19,7 +19,7 @@ public class Ksiazka {
         this.nazwiskoAutora = nazwiskoAutora;
         this.imionaAutora = imionaAutora;
         this.rok = rok;
-        this.kategorie = kategorie;
+        this.kategorie = kategorie.toLowerCase();
         this.bookId = id;
         this.liczbaWypozyczen = 0;
         id++;

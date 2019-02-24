@@ -25,6 +25,7 @@ public class Menu {
 
             wybor = sc.nextInt();
             if(wybor == -1) break;
+            else if(wybor < -1 || wybor > 9) System.out.println("Podano niepoprawną opcję, wybierz jeszcze raz.");
 
             switch (wybor) {
                 case 1:
@@ -79,7 +80,9 @@ public class Menu {
 
                     switch (wybor) {
                         case 1:
-
+                            System.out.println("Liczba wszystkich książek w bibliotece: " + biblioteka.zwrocIleKsiazek());
+                            System.out.println("Liczba obecnie wypożyczonych książek: " + biblioteka.zwrocIleObecnieWypozyczonych());
+                            System.out.println("Liczba wszystkich wypożyczeń: " + biblioteka.zwrocIleWszystkichWypozyczen());
                             break;
                         case 2:
 
