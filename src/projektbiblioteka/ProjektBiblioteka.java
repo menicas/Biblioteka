@@ -13,6 +13,10 @@ public class ProjektBiblioteka {
         biblioteka.zwrocKsiazke(1);
         biblioteka.wypozyczKsiazke(1);
         biblioteka.zwrocKsiazke(1);
+        biblioteka.wypozyczKsiazke(1);
+        biblioteka.zwrocKsiazke(1);
+        biblioteka.wypozyczKsiazke(2);
+        biblioteka.zwrocKsiazke(2);
         biblioteka.wypozyczKsiazke(2);
         biblioteka.zwrocKsiazke(2);
         biblioteka.wypozyczKsiazke(2);

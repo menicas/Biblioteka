@@ -2,6 +2,7 @@ package projektbiblioteka;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class Biblioteka {
@@ -123,6 +124,31 @@ public class Biblioteka {
         System.out.println();
     }
 
+    public void wyswietl5NajczesciejWypozyczanych(){
+        Ksiazka[] najczesciejWypozyczane = new Ksiazka[5];
+        for(int i = 0; i < najczesciejWypozyczane.length; i++){
+            najczesciejWypozyczane[i] = ksiazki.get(0);
+        }
+
+        for(Ksiazka k : ksiazki){
+            System.out.println(k.zwrocTytul());
+            Ksiazka temp = k;
+            for (int i = 0; i < najczesciejWypozyczane.length; i++){
+                Ksiazka  temp1;
+                if(temp.zwrocLiczbeWypozyczen() > najczesciejWypozyczane[i].zwrocLiczbeWypozyczen()){
+                    System.out.println("porownywane: " + temp.zwrocTytul() + "..." + najczesciejWypozyczane[i].zwrocTytul());
+                    System.out.println(temp.zwrocLiczbeWypozyczen() + "..." + najczesciejWypozyczane[i].zwrocLiczbeWypozyczen());
+                    temp1 = najczesciejWypozyczane[i];
+                    najczesciejWypozyczane[i] = temp;
+                    temp = temp1;
+                }
+            }
+        }
+        for(Ksiazka k : najczesciejWypozyczane){
+            this.wyswietlSkroconaKsiazke(k.zwrocId());
+        }
+    }
+
     public void wypozyczKsiazke(int id){
         Ksiazka k = ksiazki.get(id);
         String daneKsiazki = k.zwrocInicjałyImionAutora() + k.zwrocNazwiskoAutora() + ", " + k.zwrocTytul() + ", " + k.zwrocRok();
@@ -152,7 +178,7 @@ public class Biblioteka {
         return ileKsiazek;
     }
 
-    public int zwrocIleObecnieWypozyczonych(){ return this.ileObecnieWypozyczonych; }
+    public int zwrocIleObecnieWypozyczonych(){ return this.ileObecnieWypozyczonych;}
 
     public int zwrocIleWszystkichWypozyczen(){ return this.ileWszystkichWypozyczen; }
 

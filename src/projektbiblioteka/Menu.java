@@ -85,7 +85,7 @@ public class Menu {
                             System.out.println("Liczba wszystkich wypożyczeń: " + biblioteka.zwrocIleWszystkichWypozyczen());
                             break;
                         case 2:
-
+                            biblioteka.wyswietl5NajczesciejWypozyczanych();
                             break;
                         case 3:
 
