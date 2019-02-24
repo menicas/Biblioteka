@@ -270,9 +270,6 @@ public class Biblioteka {
         ksiazki.add(new Ksiazka(tytul, imiona, nazwisko, rok, kategorie));
         //dodaj kategorie do tablicy istniejaceKategorie
         String[] tabKategorii = kategorie.split(";");
-        for (String k : tabKategorii) {
-            System.out.println(k);
-        }
         for (String kategoria : tabKategorii) {
             if (!istniejaceKategorie.contains(kategoria)) {
                 istniejaceKategorie.add(kategoria);
