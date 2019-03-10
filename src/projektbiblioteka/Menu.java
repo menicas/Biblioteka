@@ -7,16 +7,16 @@ public class Menu {
     private Scanner sc = new Scanner(System.in);
     Biblioteka biblioteka;
 
-    public Menu(Biblioteka biblioteka){
+    public Menu(Biblioteka biblioteka) {
         this.biblioteka = biblioteka;
     }
 
-    public void menu(){
+    public void menu() {
 
         int wybor;
         String szukane;
 
-        while(true) {
+        while (true) {
 
             System.out.println("Co chcesz zrobić?");
             System.out.print("1 - wyświetl listę książek\n2 - wyświetl krótką listę książek\n3 - dodaj książkę\n4 - edytuj książkę(OSTROŻNIE)" +
@@ -24,8 +24,8 @@ public class Menu {
                     "\n0 - posortowana lista książek\nWpisz -1 aby zakończyć program\n");
 
             wybor = sc.nextInt();
-            if(wybor == -1) break;
-            else if(wybor < -1 || wybor > 9) System.out.println("Podano niepoprawną opcję, wybierz jeszcze raz.");
+            if (wybor == -1) break;
+            else if (wybor < -1 || wybor > 9) System.out.println("Podano niepoprawną opcję, wybierz jeszcze raz.");
 
             switch (wybor) {
                 case 1:
@@ -54,7 +54,7 @@ public class Menu {
                     wybor = sc.nextInt();
                     sc.nextLine();
 
-                    switch (wybor){
+                    switch (wybor) {
                         case 1:
                             System.out.println("Wpisz szukane nazwisko:");
                             szukane = sc.nextLine();

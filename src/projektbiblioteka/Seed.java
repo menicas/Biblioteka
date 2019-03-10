@@ -4,11 +4,11 @@ public class Seed {
 
     private Biblioteka biblioteka;
 
-    public Seed(Biblioteka b){
+    public Seed(Biblioteka b) {
         this.biblioteka = b;
     }
 
-    public void seed(){
+    public void seed() {
         biblioteka.wypozyczKsiazke(1);
         biblioteka.zwrocKsiazke(1);
         biblioteka.wypozyczKsiazke(1);
@@ -50,5 +50,7 @@ public class Seed {
 
         biblioteka.wypozyczKsiazke(0);
         biblioteka.zwrocKsiazke(0);
+
+        biblioteka.wypozyczKsiazke(11);
     }
 }

@@ -1,7 +1,5 @@
 package projektbiblioteka;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,7 +31,6 @@ public class Biblioteka {
         }
         ileKsiazek = ksiazki.size();
         reader.close();
-
     }
 
     private Ksiazka dodajKsiazke() {
@@ -127,25 +124,32 @@ public class Biblioteka {
     }
 
     //TRY TO REFACTOR
+    //naprawic opcje z wyswietlaniem ksiazek z ta sama liczba wypozyczen
 
     public void wyswietl5NajczesciejWypozyczanych() {
-        Ksiazka[] najczesciejWypozyczane = new Ksiazka[5];
-        for (int i = 0; i < najczesciejWypozyczane.length; i++) {
-            najczesciejWypozyczane[i] = ksiazki.get(0);
+        ArrayList<Ksiazka> najczesciejWypozyczane = new ArrayList<>();
+        for (Ksiazka k : this.ksiazki) {
+            if (k.zwrocLiczbeWypozyczen() > 0) najczesciejWypozyczane.add(k);
         }
-        for (Ksiazka k : ksiazki) {
-            Ksiazka temp = k;
-            for (int i = 0; i < najczesciejWypozyczane.length; i++) {
-                Ksiazka temp1;
-                if (temp.zwrocLiczbeWypozyczen() > najczesciejWypozyczane[i].zwrocLiczbeWypozyczen()) {
-                    temp1 = najczesciejWypozyczane[i];
-                    najczesciejWypozyczane[i] = temp;
-                    temp = temp1;
-                }
+        Collections.sort(najczesciejWypozyczane);
+        boolean piecPierwszychRowne = true;
+        int liczbaWypozyczenPierwszejKsiazki = najczesciejWypozyczane.get(0).zwrocLiczbeWypozyczen();
+        for (int i = 1; i < 5; i++) {
+            if (liczbaWypozyczenPierwszejKsiazki != najczesciejWypozyczane.get(i).zwrocLiczbeWypozyczen()) {
+                piecPierwszychRowne = false;
+                break;
             }
         }
-        for (Ksiazka k : najczesciejWypozyczane) {
-            this.wyswietlSkroconaKsiazke(k.zwrocId());
+        int i = 0;
+        if (piecPierwszychRowne) {
+            while (liczbaWypozyczenPierwszejKsiazki == najczesciejWypozyczane.get(i).zwrocLiczbeWypozyczen() && i < najczesciejWypozyczane.size()) {
+                this.wyswietlSkroconaKsiazke(i);
+                i++;
+            }
+        } else {
+            for (i = 0; i < 5; i++) {
+                this.wyswietlSkroconaKsiazke(najczesciejWypozyczane.get(i).zwrocId());
+            }
         }
     }
 
@@ -153,17 +157,20 @@ public class Biblioteka {
 
     public void wyswietl5NajpopularniejszychWKategorii() {
         ArrayList<Ksiazka> listaKsiazek;
-        for(String kategoria : this.istniejaceKategorie){
+        int cnt;
+        for (String kategoria : this.istniejaceKategorie) {
             listaKsiazek = new ArrayList<>();
             System.out.println("\nKategoria: " + kategoria);
-            for(Ksiazka k : this.ksiazki){
-                if(k.zwrocKategorie().contains(kategoria) && k.zwrocLiczbeWypozyczen() > 0){
+            for (Ksiazka k : this.ksiazki) {
+                if (k.zwrocKategorie().contains(kategoria) && k.zwrocLiczbeWypozyczen() > 0) {
                     listaKsiazek.add(ksiazki.get(k.zwrocId()));
-                    if(listaKsiazek.size() == 5) break;
                 }
             }
-            for(Ksiazka k : listaKsiazek){
-                this.wyswietlSkroconaKsiazke(k.zwrocId());
+            Collections.sort(listaKsiazek);
+            if (listaKsiazek.size() < 5) cnt = listaKsiazek.size();
+            else cnt = 5;
+            for (int i = 0; i < cnt; i++) {
+                this.wyswietlSkroconaKsiazke(listaKsiazek.get(i).zwrocId());
             }
         }
     }
