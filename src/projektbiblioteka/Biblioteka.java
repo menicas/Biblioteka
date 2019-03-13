@@ -101,8 +101,8 @@ public class Biblioteka {
 
     private void wyswietlSkroconaKsiazke(int id) {
         Ksiazka k = ksiazki.get(id);
-        System.out.format("%-5d %-30s %-35s %-3s %-4d\n",
-                k.zwrocId(), k.zwrocTytul(), (k.zwrocInicjałyImionAutora() + k.zwrocNazwiskoAutora()), (k.czyWypozyczona()) ? "tak" : "nie", k.zwrocLiczbeWypozyczen());
+        System.out.format("%-5d %-30s %-35s %-3s\n",
+                k.zwrocId(), k.zwrocTytul(), (k.zwrocInicjałyImionAutora() + k.zwrocNazwiskoAutora()), (k.czyWypozyczona()) ? "tak" : "nie");
     }
 
     public void wyswietlSkroconaListeKsiazek() {
@@ -123,8 +123,6 @@ public class Biblioteka {
         System.out.println();
     }
 
-    //TRY TO REFACTOR
-    //naprawic opcje z wyswietlaniem ksiazek z ta sama liczba wypozyczen
 
     public void wyswietl5NajczesciejWypozyczanych() {
         ArrayList<Ksiazka> najczesciejWypozyczane = new ArrayList<>();
@@ -153,7 +151,7 @@ public class Biblioteka {
         }
     }
 
-    //TRY TO REFACTOR
+    //REFACTOR ----------------------------------------------------------------------------------------------
 
     public void wyswietl5NajpopularniejszychWKategorii() {
         ArrayList<Ksiazka> listaKsiazek;
@@ -261,20 +259,21 @@ public class Biblioteka {
             bufferedWriter.newLine();
             bufferedWriter.close();
         } catch (IOException e) {
-            System.out.println("Could not write to file - biblioteka.dat");
+            System.out.println("Nie udało się zapisać do pliku - biblioteka.dat");
             e.printStackTrace();
         }
         reader.close();
     }
 
-    private void odczytajZPliku(Scanner read) {
+    private Ksiazka odczytajZPliku(Scanner read) {
         String[] data = read.nextLine().split("; ");
         String imiona = data[0].split(", ")[0];
         String nazwisko = data[0].split(", ")[1];
         String tytul = data[1];
         int rok = Integer.parseInt(data[2]);
         String kategorie = data[3].replaceAll(", ", ";");
-        ksiazki.add(new Ksiazka(tytul, imiona, nazwisko, rok, kategorie));
+        Ksiazka odczytanaKsiazka = new Ksiazka(tytul, imiona, nazwisko, rok, kategorie);
+        ksiazki.add(odczytanaKsiazka);
         //dodaj kategorie do tablicy istniejaceKategorie
         String[] tabKategorii = kategorie.split(";");
         for (String kategoria : tabKategorii) {
@@ -282,5 +281,20 @@ public class Biblioteka {
                 istniejaceKategorie.add(kategoria);
             }
         }
+        return odczytanaKsiazka;
+    }
+
+    public void importZPliku(String sciezkaDoPliku) {
+        Scanner importFile = null;
+        try {
+            importFile = new Scanner(new File(sciezkaDoPliku));
+        } catch (FileNotFoundException e) {
+            System.out.println("Nie znaleziono pliku: " + sciezkaDoPliku);
+            e.printStackTrace();
+        }
+        while (importFile.hasNext()) {
+            zapisDoPliku(odczytajZPliku(importFile));
+        }
+        importFile.close();
     }
 }
