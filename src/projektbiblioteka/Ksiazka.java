@@ -1,8 +1,5 @@
 package projektbiblioteka;
 
-
-import org.jetbrains.annotations.NotNull;
-
 public class Ksiazka implements Comparable {
 
     private static int id = 0;
