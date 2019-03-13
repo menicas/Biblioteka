@@ -11,10 +11,10 @@ public class Menu {
         this.biblioteka = biblioteka;
     }
 
-    public void menu() {
+    public void wyswietlMenu() {
 
         int wybor;
-        String szukane;
+        String szukane, sciezkaDoPliku;
 
         while (true) {
 
@@ -97,7 +97,10 @@ public class Menu {
                     }
                     break;
                 case 9:
-
+                    System.out.println("Podaj ścieżkę do pliku");
+                    sc.nextLine();
+                    sciezkaDoPliku = sc.nextLine();
+                    biblioteka.importZPliku(sciezkaDoPliku);
                     break;
                 case 0:
 
