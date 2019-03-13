@@ -134,7 +134,7 @@ public class Biblioteka {
         Collections.sort(najczesciejWypozyczane);
         boolean piecPierwszychRowne = true;
         int liczbaWypozyczenPierwszejKsiazki = najczesciejWypozyczane.get(0).zwrocLiczbeWypozyczen();
-        for (int i = 1; i < 5; i++) {
+        for (int i = 1; i <= 5; i++) {
             if (liczbaWypozyczenPierwszejKsiazki != najczesciejWypozyczane.get(i).zwrocLiczbeWypozyczen()) {
                 piecPierwszychRowne = false;
                 break;
@@ -142,8 +142,8 @@ public class Biblioteka {
         }
         int i = 0;
         if (piecPierwszychRowne) {
-            while (liczbaWypozyczenPierwszejKsiazki == najczesciejWypozyczane.get(i).zwrocLiczbeWypozyczen() && i < najczesciejWypozyczane.size()) {
-                this.wyswietlSkroconaKsiazke(i);
+            while (i < najczesciejWypozyczane.size() && liczbaWypozyczenPierwszejKsiazki == najczesciejWypozyczane.get(i).zwrocLiczbeWypozyczen()) {
+                this.wyswietlSkroconaKsiazke(najczesciejWypozyczane.get(i).zwrocId());
                 i++;
             }
         } else {
