@@ -14,14 +14,15 @@ public class Ksiazka implements Comparable {
     private int liczbaWypozyczen;
 
 
-    public Ksiazka(String tytul, String imionaAutora, String nazwiskoAutora, int rok, String kategorie) {
+    public Ksiazka(String tytul, String imionaAutora, String nazwiskoAutora, int rok, String kategorie, boolean czyWypozyczona, int liczbaWypozyczen) {
         this.tytul = tytul;
         this.nazwiskoAutora = nazwiskoAutora;
         this.imionaAutora = imionaAutora;
         this.rok = rok;
         this.kategorie = kategorie.toLowerCase();
         this.bookId = id;
-        this.liczbaWypozyczen = 0;
+        this.czyWypozyczona = czyWypozyczona;
+        this.liczbaWypozyczen = liczbaWypozyczen;
         id++;
     }
 
@@ -72,7 +73,7 @@ public class Ksiazka implements Comparable {
         this.kategorie = kategorie;
     }
 
-    public boolean czyWypozyczona() {
+    public boolean zwrocCzyWypozyczona() {
         return this.czyWypozyczona;
     }
 

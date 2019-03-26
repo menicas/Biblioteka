@@ -13,10 +13,11 @@ public class Biblioteka {
     private int ileObecnieWypozyczonych = 0;
     private int ileWszystkichWypozyczen = 0;
     private String sciezkaDoPlikuZDanymi = "/home/pawel/Projects/Java/ProjektBiblioteka/biblioteka.dat";
-    private FileWriter file;
-    private BufferedWriter bufferedWriter;
+    private FileWriter file = null;
+    private BufferedWriter bufferedWriter = null;
     private Scanner sc = new Scanner(System.in);
-    private Scanner reader;
+    private Scanner reader = null;
+    private RandomAccessFile raf = null;
 
     public Biblioteka() {
         try {
@@ -45,7 +46,7 @@ public class Biblioteka {
         System.out.println("Podaj rok wydania");
         int rok = sc.nextInt();
         sc.nextLine();
-        Ksiazka dodanaKsiazka = new Ksiazka(tytul, imionaAutora, nazwiskoAutora, rok, kategorie);
+        Ksiazka dodanaKsiazka = new Ksiazka(tytul, imionaAutora, nazwiskoAutora, rok, kategorie, false, 0);
         ksiazki.add(dodanaKsiazka);
         ileKsiazek = ksiazki.size();
         return dodanaKsiazka;
@@ -96,13 +97,13 @@ public class Biblioteka {
         Ksiazka k = ksiazki.get(id);
         System.out.format("%-5d %-15s %-17s %-25s %-12d %-30s %-12s %-4d \n",
                 k.zwrocId(), k.zwrocImionaAutora(), k.zwrocNazwiskoAutora(), k.zwrocTytul(),
-                k.zwrocRok(), k.zwrocKategorie(), (k.czyWypozyczona()) ? "tak" : "nie", k.zwrocLiczbeWypozyczen());
+                k.zwrocRok(), k.zwrocKategorie(), (k.zwrocCzyWypozyczona()) ? "tak" : "nie", k.zwrocLiczbeWypozyczen());
     }
 
     private void wyswietlSkroconaKsiazke(int id) {
         Ksiazka k = ksiazki.get(id);
         System.out.format("%-5d %-30s %-35s %-3s\n",
-                k.zwrocId(), k.zwrocTytul(), (k.zwrocInicjałyImionAutora() + k.zwrocNazwiskoAutora()), (k.czyWypozyczona()) ? "tak" : "nie");
+                k.zwrocId(), k.zwrocTytul(), (k.zwrocInicjałyImionAutora() + k.zwrocNazwiskoAutora()), (k.zwrocCzyWypozyczona()) ? "tak" : "nie");
     }
 
     public void wyswietlSkroconaListeKsiazek() {
@@ -123,7 +124,7 @@ public class Biblioteka {
         System.out.println();
     }
 
-
+    //NAPRAWIĆ GDY MNIEJ NIZ 5 KSIAZEK MA WIECEJ NIZ 0 WYPOZYCZEN
     public void wyswietl5NajczesciejWypozyczanych() {
         ArrayList<Ksiazka> najczesciejWypozyczane = new ArrayList<>();
         for (Ksiazka k : this.ksiazki) {
@@ -176,11 +177,12 @@ public class Biblioteka {
     public void wypozyczKsiazke(int id) {
         Ksiazka k = ksiazki.get(id);
         String daneKsiazki = k.zwrocInicjałyImionAutora() + k.zwrocNazwiskoAutora() + ", " + k.zwrocTytul() + ", " + k.zwrocRok();
-        if (k.czyWypozyczona()) {
+        if (k.zwrocCzyWypozyczona()) {
             System.out.println("Nie można wypożyczyć książki - jest już wypożyczona (" + daneKsiazki + ")");
         } else {
             k.wypozycz();
             System.out.println("Wypożyczono książkę (" + daneKsiazki + ")");
+            this.zamianaTekstu(id, "nie", "tak");
             this.ileObecnieWypozyczonych++;
         }
     }
@@ -188,13 +190,34 @@ public class Biblioteka {
     public void zwrocKsiazke(int id) {
         Ksiazka k = ksiazki.get(id);
         String daneKsiazki = k.zwrocInicjałyImionAutora() + k.zwrocNazwiskoAutora() + ", " + k.zwrocTytul() + ", " + k.zwrocRok();
-        if (k.czyWypozyczona()) {
+        if (k.zwrocCzyWypozyczona()) {
             System.out.println("Zwrócono książkę (" + daneKsiazki + ")");
             this.ileObecnieWypozyczonych--;
             this.ileWszystkichWypozyczen++;
             k.zwroc();
+            this.zamianaTekstu(id, "tak", "nie");
+            this.zamianaTekstu(id, String.valueOf(k.zwrocLiczbeWypozyczen() - 1), String.valueOf(k.zwrocLiczbeWypozyczen()));
         } else {
             System.out.println("Książka nie jest wypożyczona - nie można zwrócić (" + daneKsiazki + ")");
+        }
+    }
+
+    private void zamianaTekstu(int idKsiazki, String coZamienic, String naCoZamienic){
+        try{
+            raf = new RandomAccessFile(this.sciezkaDoPlikuZDanymi, "rw");
+            raf.seek(0);
+            for(int i = 0; i < idKsiazki; i++){
+                raf.readLine();
+            }
+            long pozycjaLinii = raf.getFilePointer();
+            String line = raf.readLine();
+            line = line.replace("; " + coZamienic, "; " + naCoZamienic);
+            raf.seek(pozycjaLinii);
+            raf.writeBytes(line);
+            raf.close();
+        } catch (IOException e){
+            System.out.println("Nie udało się zapisać do pliku: " + this.sciezkaDoPlikuZDanymi);
+            e.printStackTrace();
         }
     }
 
@@ -252,10 +275,12 @@ public class Biblioteka {
         for (String s : tabKategorii) {
             dane += s + ", ";
         }
+        dane = dane.substring(0, dane.length() - 2);
+        dane = String.format(dane + "; %s; %d", (k.zwrocCzyWypozyczona()) ? "tak" : "nie", k.zwrocLiczbeWypozyczen());
         try {
             file = new FileWriter(this.sciezkaDoPlikuZDanymi, true);
             bufferedWriter = new BufferedWriter(file);
-            bufferedWriter.write(dane.substring(0, dane.length() - 2));
+            bufferedWriter.write(dane);
             bufferedWriter.newLine();
             bufferedWriter.close();
         } catch (IOException e) {
@@ -272,7 +297,11 @@ public class Biblioteka {
         String tytul = data[1];
         int rok = Integer.parseInt(data[2]);
         String kategorie = data[3].replaceAll(", ", ";");
-        Ksiazka odczytanaKsiazka = new Ksiazka(tytul, imiona, nazwisko, rok, kategorie);
+        boolean czyWypozyczona = data[4].equals("tak");
+        int liczbaWypozyczen = Integer.parseInt(data[5]);
+        if(czyWypozyczona) this.ileObecnieWypozyczonych++;
+        this.ileWszystkichWypozyczen += liczbaWypozyczen;
+        Ksiazka odczytanaKsiazka = new Ksiazka(tytul, imiona, nazwisko, rok, kategorie, czyWypozyczona, liczbaWypozyczen);
         ksiazki.add(odczytanaKsiazka);
         //dodaj kategorie do tablicy istniejaceKategorie
         String[] tabKategorii = kategorie.split(";");

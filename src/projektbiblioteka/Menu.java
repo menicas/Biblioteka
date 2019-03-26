@@ -14,7 +14,6 @@ public class Menu {
     public void wyswietlMenu() {
 
         int wybor;
-        String szukane, sciezkaDoPliku;
 
         while (true) {
 
@@ -56,6 +55,7 @@ public class Menu {
 
                     switch (wybor) {
                         case 1:
+                            String szukane;
                             System.out.println("Wpisz szukane nazwisko:");
                             szukane = sc.nextLine();
                             biblioteka.szukajNazwisko(szukane);
@@ -97,6 +97,7 @@ public class Menu {
                     }
                     break;
                 case 9:
+                    String sciezkaDoPliku;
                     System.out.println("Podaj ścieżkę do pliku");
                     sc.nextLine();
                     sciezkaDoPliku = sc.nextLine();
