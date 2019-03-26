@@ -297,8 +297,18 @@ public class Biblioteka {
         String tytul = data[1];
         int rok = Integer.parseInt(data[2]);
         String kategorie = data[3].replaceAll(", ", ";");
-        boolean czyWypozyczona = data[4].equals("tak");
-        int liczbaWypozyczen = Integer.parseInt(data[5]);
+        boolean czyWypozyczona;
+        if(data.length > 4){
+            czyWypozyczona = data[4].equals("tak");
+        } else {
+            czyWypozyczona = false;
+        }
+        int liczbaWypozyczen;
+        if(data.length > 5){
+            liczbaWypozyczen = Integer.parseInt(data[5]);
+        } else {
+            liczbaWypozyczen = 0;
+        }
         if(czyWypozyczona) this.ileObecnieWypozyczonych++;
         this.ileWszystkichWypozyczen += liczbaWypozyczen;
         Ksiazka odczytanaKsiazka = new Ksiazka(tytul, imiona, nazwisko, rok, kategorie, czyWypozyczona, liczbaWypozyczen);
@@ -313,6 +323,7 @@ public class Biblioteka {
         return odczytanaKsiazka;
     }
 
+    // /home/pawel/Projects/Java/ProjektBiblioteka/bib.txt
     public void importZPliku(String sciezkaDoPliku) {
         Scanner importFile = null;
         try {
@@ -325,5 +336,6 @@ public class Biblioteka {
             zapisDoPliku(odczytajZPliku(importFile));
         }
         importFile.close();
+        System.out.println("Pomyślnie dokonano importu z " + sciezkaDoPliku);
     }
 }
