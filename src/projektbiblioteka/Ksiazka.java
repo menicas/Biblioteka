@@ -15,31 +15,19 @@ public class Ksiazka implements Comparable {
 
 
     public Ksiazka(String tytul, String imionaAutora, String nazwiskoAutora, int rok, String kategorie, boolean czyWypozyczona, int liczbaWypozyczen) {
+        this.bookId = id;
         this.tytul = tytul;
         this.nazwiskoAutora = nazwiskoAutora;
         this.imionaAutora = imionaAutora;
         this.rok = rok;
         this.kategorie = kategorie.toLowerCase();
-        this.bookId = id;
         this.czyWypozyczona = czyWypozyczona;
         this.liczbaWypozyczen = liczbaWypozyczen;
         id++;
     }
 
-    public String zwrocTytul() {
-        return this.tytul;
-    }
-
-    public void ustawTytul(String tytul) {
-        this.tytul = tytul;
-    }
-
-    public String zwrocNazwiskoAutora() {
-        return this.nazwiskoAutora;
-    }
-
-    public void ustawNazwiskoAutora(String nazwiskoAutora) {
-        this.nazwiskoAutora = nazwiskoAutora;
+    public int zwrocId() {
+        return this.bookId;
     }
 
     public String zwrocImionaAutora() {
@@ -57,6 +45,22 @@ public class Ksiazka implements Comparable {
         this.imionaAutora = imionaAutora;
     }
 
+    public String zwrocNazwiskoAutora() {
+        return this.nazwiskoAutora;
+    }
+
+    public void ustawNazwiskoAutora(String nazwiskoAutora) {
+        this.nazwiskoAutora = nazwiskoAutora;
+    }
+
+    public String zwrocTytul() {
+        return this.tytul;
+    }
+
+    public void ustawTytul(String tytul) {
+        this.tytul = tytul;
+    }
+
     public int zwrocRok() {
         return this.rok;
     }
@@ -65,16 +69,12 @@ public class Ksiazka implements Comparable {
         this.rok = rok;
     }
 
-    public String zwrocKategorie() {
-        return this.kategorie;
-    }
-
     public void ustawKategorie(String kategorie) {
         this.kategorie = kategorie;
     }
 
-    public boolean zwrocCzyWypozyczona() {
-        return this.czyWypozyczona;
+    public String zwrocKategorie() {
+        return this.kategorie;
     }
 
     public void wypozycz() {
@@ -86,12 +86,12 @@ public class Ksiazka implements Comparable {
         liczbaWypozyczen++;
     }
 
-    public int zwrocLiczbeWypozyczen() {
-        return liczbaWypozyczen;
+    public boolean zwrocCzyWypozyczona() {
+        return this.czyWypozyczona;
     }
 
-    public int zwrocId() {
-        return this.bookId;
+    public int zwrocLiczbeWypozyczen() {
+        return liczbaWypozyczen;
     }
 
     @Override

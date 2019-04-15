@@ -2,6 +2,32 @@ package projektbiblioteka;
 
 import java.util.Scanner;
 
+/*
+    Schemat menu:
+
+    1 - wyświetl listę książek
+    2 - wyświetl krótką listę książek
+    3 - dodaj książkę
+    4 - edytuj książkę(OSTROŻNIE)
+    5 - wypożycz książkę
+    6 - zwróć książkę
+    7 - wyszukaj książkę
+        1 - nazwiska autora
+        2 - tytułu
+        3 - kategorii tematycznej
+    8 - inne
+        1 - statystyki wypożyczeń
+        2 - 5 najczęściej wypożyczanych
+        3 - 5 najbardziej poczytnych z każdej kategorii
+        4 - 5 najbardziej poczytnych autorów
+    9 - import danych z pliku tekstowego
+    0 - posortowana lista książek
+        1 - według nazwiska autora
+        2 - według roku wydania
+        3 - według liczby wypozyczeń
+        4 - według tytułu
+*/
+
 public class Menu {
 
     private Scanner sc = new Scanner(System.in);
@@ -51,7 +77,6 @@ public class Menu {
                 case 7:
                     System.out.println("Wyszukiwanie według:\n1 - nazwiska autora\n2 - tytułu\n3 - kategorii tematycznej\n4 - powrót");
                     wybor = Walidacja.sprawdzInt(1, 4);
-                    sc.nextLine();
 
                     switch (wybor) {
                         case 1:
@@ -76,7 +101,6 @@ public class Menu {
                     System.out.println("Inne opcje:\n1 - statystyki wypożyczeń\n2 - 5 najczęściej wypożyczanych\n3 - 5 najbardziej poczytnych z każdej kategorii" +
                             "\n4 - 5 najbardziej poczytnych autorów\n5 - powrót");
                     wybor = Walidacja.sprawdzInt(1, 5);
-                    sc.nextLine();
 
                     switch (wybor) {
                         case 1:
@@ -92,22 +116,20 @@ public class Menu {
                             biblioteka.wyswietl5NajpopularniejszychWKategorii();
                             break;
                         case 4:
-                            //todo 5 najbardziej poczytnych autorow
+
                             break;
                     }
                     break;
                 case 9:
-                    String sciezkaDoPliku;
                     System.out.println("Podaj ścieżkę do pliku");
-                    sc.nextLine();
-                    sciezkaDoPliku = sc.nextLine();
+                    String sciezkaDoPliku = sc.nextLine();
                     biblioteka.importZPliku(sciezkaDoPliku);
                     break;
                 case 0:
                     System.out.println("Sortowanie:\n1 - według nazwiska autora\n2 - według roku wydania\n" +
                             "3 - według liczby wypozyczeń\n4 - według tytułu\n5 - powrót");
                     wybor = Walidacja.sprawdzInt(1, 5);
-                    switch(wybor){
+                    switch (wybor) {
                         case 1:
                             biblioteka.sortujWgNaziwskaAutora();
                             break;

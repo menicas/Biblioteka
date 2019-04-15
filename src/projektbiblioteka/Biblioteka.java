@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Scanner;
 
+// Komentarze przed metodami oznaczają miejsce, w którym zostały wykorzystane w menu (plik Menu.java)
+
 public class Biblioteka {
 
     private final ArrayList<Ksiazka> ksiazki = new ArrayList<>();
@@ -34,6 +36,34 @@ public class Biblioteka {
         reader.close();
     }
 
+    // ---------------------------------------------- 1 ----------------------------------------------
+
+    public void wyswietlListeKsiazek() {
+        System.out.format("%-5s %-15s %-17s %-25s %-12s %-30s %-12s %-4s \n",
+                "ID", "imię autora", "nazwisko autora", "tytuł", "rok wydania", "kategorie", "wypożyczona", "liczba wypożyczeń");
+        for (Ksiazka k : ksiazki) {
+            this.wyswietlKsiazke(k.zwrocId());
+        }
+        System.out.println();
+    }
+
+    // ---------------------------------------------- 2 ----------------------------------------------
+
+    public void wyswietlSkroconaListeKsiazek() {
+        System.out.format("%-5s %-30s %-35s %-3s \n",
+                "ID", "tytuł", "autor", "wypożyczona");
+        for (Ksiazka k : ksiazki) {
+            this.wyswietlSkroconaKsiazke(k.zwrocId());
+        }
+        System.out.println();
+    }
+
+    // ---------------------------------------------- 3 ----------------------------------------------
+
+    public void dodajNowaKsiazke() {
+        this.zapisDoPliku(this.dodajKsiazke());
+    }
+
     private Ksiazka dodajKsiazke() {
         System.out.println("Podaj tytuł:");
         String tytul = Walidacja.wprowadzString();
@@ -51,9 +81,7 @@ public class Biblioteka {
         return dodanaKsiazka;
     }
 
-    public void dodajNowaKsiazke() {
-        this.zapisDoPliku(this.dodajKsiazke());
-    }
+    // ---------------------------------------------- 4 ----------------------------------------------
 
     public void edytujKsiazke(int id) { //zmienic wyswietlanie na pelna a nie skrocona
         Ksiazka k = ksiazki.get(id);
@@ -89,39 +117,94 @@ public class Biblioteka {
                 break;
             default:
         }
-
     }
 
-    private void wyswietlKsiazke(int id) {
+    // ---------------------------------------------- 5 ----------------------------------------------
+
+    public void wypozyczKsiazke(int id) {
         Ksiazka k = ksiazki.get(id);
-        System.out.format("%-5d %-15s %-17s %-25s %-12d %-30s %-12s %-4d \n",
-                k.zwrocId(), k.zwrocImionaAutora(), k.zwrocNazwiskoAutora(), k.zwrocTytul(),
-                k.zwrocRok(), k.zwrocKategorie(), (k.zwrocCzyWypozyczona()) ? "tak" : "nie", k.zwrocLiczbeWypozyczen());
+        String daneKsiazki = k.zwrocInicjałyImionAutora() + k.zwrocNazwiskoAutora() + ", " + k.zwrocTytul() + ", " + k.zwrocRok();
+        if (k.zwrocCzyWypozyczona()) {
+            System.out.println("Nie można wypożyczyć książki - jest już wypożyczona (" + daneKsiazki + ")");
+        } else {
+            k.wypozycz();
+            System.out.println("Wypożyczono książkę (" + daneKsiazki + ")");
+            this.zamianaTekstu(id, "nie", "tak");
+            this.ileObecnieWypozyczonych++;
+        }
     }
 
-    private void wyswietlSkroconaKsiazke(int id) {
+    // ---------------------------------------------- 6 ----------------------------------------------
+
+    public void zwrocKsiazke(int id) {
         Ksiazka k = ksiazki.get(id);
-        System.out.format("%-5d %-30s %-35s %-3s\n",
-                k.zwrocId(), k.zwrocTytul(), (k.zwrocInicjałyImionAutora() + k.zwrocNazwiskoAutora()), (k.zwrocCzyWypozyczona()) ? "tak" : "nie");
+        String daneKsiazki = k.zwrocInicjałyImionAutora() + k.zwrocNazwiskoAutora() + ", " + k.zwrocTytul() + ", " + k.zwrocRok();
+        if (k.zwrocCzyWypozyczona()) {
+            System.out.println("Zwrócono książkę (" + daneKsiazki + ")");
+            this.ileObecnieWypozyczonych--;
+            this.ileWszystkichWypozyczen++;
+            k.zwroc();
+            this.zamianaTekstu(id, "tak", "nie");
+            this.zamianaTekstu(id, String.valueOf(k.zwrocLiczbeWypozyczen() - 1), String.valueOf(k.zwrocLiczbeWypozyczen()));
+        } else {
+            System.out.println("Książka nie jest wypożyczona - nie można zwrócić (" + daneKsiazki + ")");
+        }
     }
 
-    public void wyswietlSkroconaListeKsiazek() {
-        System.out.format("%-5s %-30s %-35s %-3s \n",
-                "ID", "tytuł", "autor", "wypożyczona");
+    // ---------------------------------------------- 7 ----------------------------------------------
+    // 7.1
+
+    public void szukajNazwisko(String szukane) {
         for (Ksiazka k : ksiazki) {
-            this.wyswietlSkroconaKsiazke(k.zwrocId());
+            if (k.zwrocNazwiskoAutora().toLowerCase().contains(szukane.toLowerCase())) {
+                wyswietlKsiazke(k.zwrocId());
+            }
         }
-        System.out.println();
     }
 
-    public void wyswietlListeKsiazek() {
-        System.out.format("%-5s %-15s %-17s %-25s %-12s %-30s %-12s %-4s \n",
-                "ID", "imię autora", "nazwisko autora", "tytuł", "rok wydania", "kategorie", "wypożyczona", "liczba wypożyczeń");
+    // 7.2
+
+    public void szukajTytul(String szukane) {
         for (Ksiazka k : ksiazki) {
-            this.wyswietlKsiazke(k.zwrocId());
+            if (k.zwrocTytul().toLowerCase().contains(szukane.toLowerCase())) {
+                wyswietlKsiazke(k.zwrocId());
+            }
         }
-        System.out.println();
     }
+
+    // 7.3
+
+    public void szukajKategorie(String szukane) {
+        String maleSzukane = szukane.toLowerCase();
+        String kategorie;
+        for (Ksiazka k : ksiazki) {
+            kategorie = k.zwrocKategorie();
+            String[] tabKategorie = kategorie.split(";");
+            for (String kategoria : tabKategorie) {
+                if (kategoria.equals(maleSzukane)) {
+                    this.wyswietlKsiazke(k.zwrocId());
+                    break;
+                }
+            }
+        }
+    }
+
+    // ---------------------------------------------- 8 ----------------------------------------------
+    // 8.1
+
+    public int zwrocIleKsiazek() {
+        return ileKsiazek;
+    }
+
+    public int zwrocIleObecnieWypozyczonych() {
+        return this.ileObecnieWypozyczonych;
+    }
+
+    public int zwrocIleWszystkichWypozyczen() {
+        return this.ileWszystkichWypozyczen;
+    }
+
+    // 8.2
 
     //todo NAPRAWIĆ GDY MNIEJ NIZ 5 KSIAZEK MA WIECEJ NIZ 0 WYPOZYCZEN, 15.04 - w ogole przstalo dzialac
     public void wyswietl5NajczesciejWypozyczanych() {
@@ -151,8 +234,9 @@ public class Biblioteka {
         }
     }
 
-    //todo REFACTOR ----------------------------------------------------------------------------------------------
+    // 8.3
 
+    //todo REFACTOR ----------------------------------------------------------------------------------------------
     public void wyswietl5NajpopularniejszychWKategorii() {
         ArrayList<Ksiazka> listaKsiazek;
         int cnt;
@@ -173,39 +257,126 @@ public class Biblioteka {
         }
     }
 
-    public void wypozyczKsiazke(int id) {
-        Ksiazka k = ksiazki.get(id);
-        String daneKsiazki = k.zwrocInicjałyImionAutora() + k.zwrocNazwiskoAutora() + ", " + k.zwrocTytul() + ", " + k.zwrocRok();
-        if (k.zwrocCzyWypozyczona()) {
-            System.out.println("Nie można wypożyczyć książki - jest już wypożyczona (" + daneKsiazki + ")");
-        } else {
-            k.wypozycz();
-            System.out.println("Wypożyczono książkę (" + daneKsiazki + ")");
-            this.zamianaTekstu(id, "nie", "tak");
-            this.ileObecnieWypozyczonych++;
+    // 8.4
+
+    //todo 5 najbardziej poczytnych autorow
+
+    // ---------------------------------------------- 9 ----------------------------------------------
+
+    // /home/pawel/Projects/Java/ProjektBiblioteka/bib.txt
+    public void importZPliku(String sciezkaDoPliku) {
+        Scanner importFile = null;
+        try {
+            importFile = new Scanner(new File(sciezkaDoPliku));
+        } catch (FileNotFoundException e) {
+            System.out.println("Nie znaleziono pliku: " + sciezkaDoPliku);
+            e.printStackTrace();
+        }
+        while (importFile.hasNext()) {
+            zapisDoPliku(odczytajZPliku(importFile));
+        }
+        importFile.close();
+        System.out.println("Pomyślnie dokonano importu z " + sciezkaDoPliku);
+    }
+
+    // ---------------------------------------------- 0 ----------------------------------------------
+    // 0.1
+
+    public void sortujWgNaziwskaAutora() {
+        Ksiazka[] sortowanieNazwiska = this.ksiazki.toArray(new Ksiazka[ksiazki.size()]);
+        Ksiazka tmp;
+        for (int i = 0; i < sortowanieNazwiska.length - 1; i++) {
+            for (int j = 0; j < sortowanieNazwiska.length - 1; j++) {
+                if (sortowanieNazwiska[j].zwrocNazwiskoAutora().compareTo(sortowanieNazwiska[j + 1].zwrocNazwiskoAutora()) > 0) {
+                    tmp = sortowanieNazwiska[j];
+                    sortowanieNazwiska[j] = sortowanieNazwiska[j + 1];
+                    sortowanieNazwiska[j + 1] = tmp;
+                }
+            }
+        }
+        for (Ksiazka k : sortowanieNazwiska) {
+            this.wyswietlKsiazke(k.zwrocId());
         }
     }
 
-    public void zwrocKsiazke(int id) {
-        Ksiazka k = ksiazki.get(id);
-        String daneKsiazki = k.zwrocInicjałyImionAutora() + k.zwrocNazwiskoAutora() + ", " + k.zwrocTytul() + ", " + k.zwrocRok();
-        if (k.zwrocCzyWypozyczona()) {
-            System.out.println("Zwrócono książkę (" + daneKsiazki + ")");
-            this.ileObecnieWypozyczonych--;
-            this.ileWszystkichWypozyczen++;
-            k.zwroc();
-            this.zamianaTekstu(id, "tak", "nie");
-            this.zamianaTekstu(id, String.valueOf(k.zwrocLiczbeWypozyczen() - 1), String.valueOf(k.zwrocLiczbeWypozyczen()));
-        } else {
-            System.out.println("Książka nie jest wypożyczona - nie można zwrócić (" + daneKsiazki + ")");
+    // 0.2
+
+    public void sortujWgRokuWydania() {
+        Ksiazka[] sortowanieRokWydania = this.ksiazki.toArray(new Ksiazka[ksiazki.size()]);
+        Ksiazka tmp;
+        for (int i = 0; i < sortowanieRokWydania.length - 1; i++) {
+            for (int j = 0; j < sortowanieRokWydania.length - 1; j++) {
+                if (sortowanieRokWydania[j].zwrocRok() < sortowanieRokWydania[j + 1].zwrocRok()) {
+                    tmp = sortowanieRokWydania[j];
+                    sortowanieRokWydania[j] = sortowanieRokWydania[j + 1];
+                    sortowanieRokWydania[j + 1] = tmp;
+                }
+            }
+        }
+        for (Ksiazka k : sortowanieRokWydania) {
+            this.wyswietlKsiazke(k.zwrocId());
         }
     }
 
-    private void zamianaTekstu(int idKsiazki, String coZamienic, String naCoZamienic){
-        try{
+    // 0.3
+
+    public void sortujWgLiczbyWypozyczen() {
+        Ksiazka[] sortowanieLiczbaWypozyczen = this.ksiazki.toArray(new Ksiazka[ksiazki.size()]);
+        Ksiazka tmp;
+        for (int i = 0; i < sortowanieLiczbaWypozyczen.length - 1; i++) {
+            for (int j = 0; j < sortowanieLiczbaWypozyczen.length - 1; j++) {
+                if (sortowanieLiczbaWypozyczen[j].zwrocLiczbeWypozyczen() < sortowanieLiczbaWypozyczen[j + 1].zwrocLiczbeWypozyczen()) {
+                    tmp = sortowanieLiczbaWypozyczen[j];
+                    sortowanieLiczbaWypozyczen[j] = sortowanieLiczbaWypozyczen[j + 1];
+                    sortowanieLiczbaWypozyczen[j + 1] = tmp;
+                }
+            }
+        }
+        for (Ksiazka k : sortowanieLiczbaWypozyczen) {
+            this.wyswietlKsiazke(k.zwrocId());
+        }
+    }
+
+    // 0.4
+
+    public void sortujWgTytulu() {
+        Ksiazka[] sortowanieTytul = this.ksiazki.toArray(new Ksiazka[ksiazki.size()]);
+        Ksiazka tmp;
+        for (int i = 0; i < sortowanieTytul.length - 1; i++) {
+            for (int j = 0; j < sortowanieTytul.length - 1; j++) {
+                if (sortowanieTytul[j].zwrocTytul().compareTo(sortowanieTytul[j + 1].zwrocTytul()) > 0) {
+                    tmp = sortowanieTytul[j];
+                    sortowanieTytul[j] = sortowanieTytul[j + 1];
+                    sortowanieTytul[j + 1] = tmp;
+                }
+            }
+        }
+        for (Ksiazka k : sortowanieTytul) {
+            this.wyswietlKsiazke(k.zwrocId());
+        }
+    }
+
+    // ---------------------------------------------- METODY POMOCNICZE ----------------------------------------------
+    // WYŚWIETLANIE KSIĄŻEK W KONSOLI
+    private void wyswietlKsiazke(int id) {
+        Ksiazka k = ksiazki.get(id);
+        System.out.format("%-5d %-15s %-17s %-25s %-12d %-30s %-12s %-4d \n",
+                k.zwrocId(), k.zwrocImionaAutora(), k.zwrocNazwiskoAutora(), k.zwrocTytul(),
+                k.zwrocRok(), k.zwrocKategorie(), (k.zwrocCzyWypozyczona()) ? "tak" : "nie", k.zwrocLiczbeWypozyczen());
+    }
+
+    private void wyswietlSkroconaKsiazke(int id) {
+        Ksiazka k = ksiazki.get(id);
+        System.out.format("%-5d %-30s %-35s %-3s\n",
+                k.zwrocId(), k.zwrocTytul(), (k.zwrocInicjałyImionAutora() + k.zwrocNazwiskoAutora()), (k.zwrocCzyWypozyczona()) ? "tak" : "nie");
+    }
+
+    // OPERACJE NA PLIKU Z DANYMI
+    private void zamianaTekstu(int idKsiazki, String coZamienic, String naCoZamienic) {
+        try {
             raf = new RandomAccessFile(this.sciezkaDoPlikuZDanymi, "rw");
             raf.seek(0);
-            for(int i = 0; i < idKsiazki; i++){
+            for (int i = 0; i < idKsiazki; i++) {
                 raf.readLine();
             }
             long pozycjaLinii = raf.getFilePointer();
@@ -214,120 +385,9 @@ public class Biblioteka {
             raf.seek(pozycjaLinii);
             raf.writeBytes(line);
             raf.close();
-        } catch (IOException e){
+        } catch (IOException e) {
             System.out.println("Nie udało się zapisać do pliku: " + this.sciezkaDoPlikuZDanymi);
             e.printStackTrace();
-        }
-    }
-
-    public int zwrocIleKsiazek() {
-        return ileKsiazek;
-    }
-
-    public int zwrocIleObecnieWypozyczonych() {
-        return this.ileObecnieWypozyczonych;
-    }
-
-    public int zwrocIleWszystkichWypozyczen() {
-        return this.ileWszystkichWypozyczen;
-    }
-
-    public void szukajNazwisko(String szukane) {
-        for (Ksiazka k : ksiazki) {
-            if (k.zwrocNazwiskoAutora().toLowerCase().contains(szukane.toLowerCase())) {
-                wyswietlKsiazke(k.zwrocId());
-            }
-        }
-    }
-
-    public void szukajTytul(String szukane) {
-        for (Ksiazka k : ksiazki) {
-            if (k.zwrocTytul().toLowerCase().contains(szukane.toLowerCase())) {
-                wyswietlKsiazke(k.zwrocId());
-            }
-        }
-    }
-
-    public void szukajKategorie(String szukane) {
-        String maleSzukane = szukane.toLowerCase();
-        String kategorie;
-        for (Ksiazka k : ksiazki) {
-            kategorie = k.zwrocKategorie();
-            String[] tabKategorie = kategorie.split(";");
-            for (String kategoria : tabKategorie) {
-                if (kategoria.equals(maleSzukane)) {
-                    this.wyswietlKsiazke(k.zwrocId());
-                    break;
-                }
-            }
-        }
-    }
-
-    public void sortujWgNaziwskaAutora(){
-        Ksiazka[] sortowanieNazwiska = this.ksiazki.toArray(new Ksiazka[ksiazki.size()]);
-        Ksiazka tmp;
-        for(int i = 0; i < sortowanieNazwiska.length - 1; i++){
-            for(int j = 0; j < sortowanieNazwiska.length - 1; j++){
-                if(sortowanieNazwiska[j].zwrocNazwiskoAutora().compareTo(sortowanieNazwiska[j + 1].zwrocNazwiskoAutora()) > 0){
-                    tmp = sortowanieNazwiska[j];
-                    sortowanieNazwiska[j] = sortowanieNazwiska[j + 1];
-                    sortowanieNazwiska[j + 1] = tmp;
-                }
-            }
-        }
-        for(Ksiazka k : sortowanieNazwiska){
-            this.wyswietlKsiazke(k.zwrocId());
-        }
-    }
-
-    public void sortujWgRokuWydania(){
-        Ksiazka[] sortowanieRokWydania = this.ksiazki.toArray(new Ksiazka[ksiazki.size()]);
-        Ksiazka tmp;
-        for(int i = 0; i < sortowanieRokWydania.length - 1; i++){
-            for(int j = 0; j < sortowanieRokWydania.length - 1; j++){
-                if(sortowanieRokWydania[j].zwrocRok() < sortowanieRokWydania[j + 1].zwrocRok()){
-                    tmp = sortowanieRokWydania[j];
-                    sortowanieRokWydania[j] = sortowanieRokWydania[j + 1];
-                    sortowanieRokWydania [j + 1] = tmp;
-                }
-            }
-        }
-        for(Ksiazka k : sortowanieRokWydania){
-            this.wyswietlKsiazke(k.zwrocId());
-        }
-    }
-
-    public void sortujWgLiczbyWypozyczen(){
-        Ksiazka[] sortowanieLiczbaWypozyczen = this.ksiazki.toArray(new Ksiazka[ksiazki.size()]);
-        Ksiazka tmp;
-        for(int i = 0; i < sortowanieLiczbaWypozyczen.length - 1; i++){
-            for(int j = 0; j < sortowanieLiczbaWypozyczen.length - 1; j++){
-                if(sortowanieLiczbaWypozyczen[j].zwrocLiczbeWypozyczen() < sortowanieLiczbaWypozyczen[j + 1].zwrocLiczbeWypozyczen()){
-                    tmp = sortowanieLiczbaWypozyczen[j];
-                    sortowanieLiczbaWypozyczen[j] = sortowanieLiczbaWypozyczen[j + 1];
-                    sortowanieLiczbaWypozyczen [j + 1] = tmp;
-                }
-            }
-        }
-        for(Ksiazka k : sortowanieLiczbaWypozyczen){
-            this.wyswietlKsiazke(k.zwrocId());
-        }
-    }
-
-    public void sortujWgTytulu(){
-        Ksiazka[] sortowanieTytul = this.ksiazki.toArray(new Ksiazka[ksiazki.size()]);
-        Ksiazka tmp;
-        for(int i = 0; i < sortowanieTytul.length - 1; i++){
-            for(int j = 0; j < sortowanieTytul.length - 1; j++){
-                if(sortowanieTytul[j].zwrocTytul().compareTo(sortowanieTytul[j + 1].zwrocTytul()) > 0){
-                    tmp = sortowanieTytul[j];
-                    sortowanieTytul[j] = sortowanieTytul[j + 1];
-                    sortowanieTytul[j + 1] = tmp;
-                }
-            }
-        }
-        for(Ksiazka k : sortowanieTytul){
-            this.wyswietlKsiazke(k.zwrocId());
         }
     }
 
@@ -365,18 +425,18 @@ public class Biblioteka {
         int rok = Integer.parseInt(data[2]);
         String kategorie = data[3].replaceAll(", ", ";");
         boolean czyWypozyczona;
-        if(data.length > 4){
+        if (data.length > 4) {
             czyWypozyczona = data[4].equals("tak");
         } else {
             czyWypozyczona = false;
         }
         int liczbaWypozyczen;
-        if(data.length > 5){
+        if (data.length > 5) {
             liczbaWypozyczen = Integer.parseInt(data[5]);
         } else {
             liczbaWypozyczen = 0;
         }
-        if(czyWypozyczona) this.ileObecnieWypozyczonych++;
+        if (czyWypozyczona) this.ileObecnieWypozyczonych++;
         this.ileWszystkichWypozyczen += liczbaWypozyczen;
         Ksiazka odczytanaKsiazka = new Ksiazka(tytul, imiona, nazwisko, rok, kategorie, czyWypozyczona, liczbaWypozyczen);
         ksiazki.add(odczytanaKsiazka);
@@ -388,21 +448,5 @@ public class Biblioteka {
             }
         }
         return odczytanaKsiazka;
-    }
-
-    // /home/pawel/Projects/Java/ProjektBiblioteka/bib.txt
-    public void importZPliku(String sciezkaDoPliku) {
-        Scanner importFile = null;
-        try {
-            importFile = new Scanner(new File(sciezkaDoPliku));
-        } catch (FileNotFoundException e) {
-            System.out.println("Nie znaleziono pliku: " + sciezkaDoPliku);
-            e.printStackTrace();
-        }
-        while (importFile.hasNext()) {
-            zapisDoPliku(odczytajZPliku(importFile));
-        }
-        importFile.close();
-        System.out.println("Pomyślnie dokonano importu z " + sciezkaDoPliku);
     }
 }
