@@ -44,7 +44,7 @@ public class Biblioteka {
         System.out.println("Podaj kategorie (oddzielone średnikami (;))");
         String kategorie = Walidacja.wprowadzString();
         System.out.println("Podaj rok wydania (1970-2012)");
-        int rok = Walidacja.sprawdzInt(1970, 2012);  // todo DOKONCZYC BO NIE DZIALA
+        int rok = Walidacja.sprawdzInt(1970, 2012);
         Ksiazka dodanaKsiazka = new Ksiazka(tytul, imionaAutora, nazwiskoAutora, rok, kategorie, false, 0);
         ksiazki.add(dodanaKsiazka);
         ileKsiazek = ksiazki.size();
@@ -68,23 +68,23 @@ public class Biblioteka {
         int rok;
         switch (wybor) {
             case 0:
-                nowaWartosc = sc.nextLine();
+                nowaWartosc = Walidacja.wprowadzString();
                 k.ustawImionaAutora(nowaWartosc);
                 break;
             case 1:
-                nowaWartosc = sc.nextLine();
+                nowaWartosc = Walidacja.wprowadzString();
                 k.ustawNazwiskoAutora(nowaWartosc);
                 break;
             case 2:
-                nowaWartosc = sc.nextLine();
+                nowaWartosc = Walidacja.wprowadzString();
                 k.ustawTytul(nowaWartosc);
                 break;
             case 3:
-                rok = sc.nextInt();
+                rok = Walidacja.sprawdzInt(1970, 2012);
                 k.ustawRok(rok);
                 break;
             case 4:
-                nowaWartosc = sc.nextLine();
+                nowaWartosc = Walidacja.wprowadzString();
                 k.ustawKategorie(nowaWartosc);
                 break;
             default:
@@ -123,7 +123,7 @@ public class Biblioteka {
         System.out.println();
     }
 
-    //todo NAPRAWIĆ GDY MNIEJ NIZ 5 KSIAZEK MA WIECEJ NIZ 0 WYPOZYCZEN
+    //todo NAPRAWIĆ GDY MNIEJ NIZ 5 KSIAZEK MA WIECEJ NIZ 0 WYPOZYCZEN, 15.04 - w ogole przstalo dzialac
     public void wyswietl5NajczesciejWypozyczanych() {
         ArrayList<Ksiazka> najczesciejWypozyczane = new ArrayList<>();
         for (Ksiazka k : this.ksiazki) {
@@ -260,6 +260,74 @@ public class Biblioteka {
                     break;
                 }
             }
+        }
+    }
+
+    public void sortujWgNaziwskaAutora(){
+        Ksiazka[] sortowanieNazwiska = this.ksiazki.toArray(new Ksiazka[ksiazki.size()]);
+        Ksiazka tmp;
+        for(int i = 0; i < sortowanieNazwiska.length - 1; i++){
+            for(int j = 0; j < sortowanieNazwiska.length - 1; j++){
+                if(sortowanieNazwiska[j].zwrocNazwiskoAutora().compareTo(sortowanieNazwiska[j + 1].zwrocNazwiskoAutora()) > 0){
+                    tmp = sortowanieNazwiska[j];
+                    sortowanieNazwiska[j] = sortowanieNazwiska[j + 1];
+                    sortowanieNazwiska[j + 1] = tmp;
+                }
+            }
+        }
+        for(Ksiazka k : sortowanieNazwiska){
+            this.wyswietlKsiazke(k.zwrocId());
+        }
+    }
+
+    public void sortujWgRokuWydania(){
+        Ksiazka[] sortowanieRokWydania = this.ksiazki.toArray(new Ksiazka[ksiazki.size()]);
+        Ksiazka tmp;
+        for(int i = 0; i < sortowanieRokWydania.length - 1; i++){
+            for(int j = 0; j < sortowanieRokWydania.length - 1; j++){
+                if(sortowanieRokWydania[j].zwrocRok() < sortowanieRokWydania[j + 1].zwrocRok()){
+                    tmp = sortowanieRokWydania[j];
+                    sortowanieRokWydania[j] = sortowanieRokWydania[j + 1];
+                    sortowanieRokWydania [j + 1] = tmp;
+                }
+            }
+        }
+        for(Ksiazka k : sortowanieRokWydania){
+            this.wyswietlKsiazke(k.zwrocId());
+        }
+    }
+
+    public void sortujWgLiczbyWypozyczen(){
+        Ksiazka[] sortowanieLiczbaWypozyczen = this.ksiazki.toArray(new Ksiazka[ksiazki.size()]);
+        Ksiazka tmp;
+        for(int i = 0; i < sortowanieLiczbaWypozyczen.length - 1; i++){
+            for(int j = 0; j < sortowanieLiczbaWypozyczen.length - 1; j++){
+                if(sortowanieLiczbaWypozyczen[j].zwrocLiczbeWypozyczen() < sortowanieLiczbaWypozyczen[j + 1].zwrocLiczbeWypozyczen()){
+                    tmp = sortowanieLiczbaWypozyczen[j];
+                    sortowanieLiczbaWypozyczen[j] = sortowanieLiczbaWypozyczen[j + 1];
+                    sortowanieLiczbaWypozyczen [j + 1] = tmp;
+                }
+            }
+        }
+        for(Ksiazka k : sortowanieLiczbaWypozyczen){
+            this.wyswietlKsiazke(k.zwrocId());
+        }
+    }
+
+    public void sortujWgTytulu(){
+        Ksiazka[] sortowanieTytul = this.ksiazki.toArray(new Ksiazka[ksiazki.size()]);
+        Ksiazka tmp;
+        for(int i = 0; i < sortowanieTytul.length - 1; i++){
+            for(int j = 0; j < sortowanieTytul.length - 1; j++){
+                if(sortowanieTytul[j].zwrocTytul().compareTo(sortowanieTytul[j + 1].zwrocTytul()) > 0){
+                    tmp = sortowanieTytul[j];
+                    sortowanieTytul[j] = sortowanieTytul[j + 1];
+                    sortowanieTytul[j + 1] = tmp;
+                }
+            }
+        }
+        for(Ksiazka k : sortowanieTytul){
+            this.wyswietlKsiazke(k.zwrocId());
         }
     }
 
