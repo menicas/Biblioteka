@@ -22,9 +22,9 @@ public class Menu {
                     "\n5 - wypożycz książkę\n6 - zwróć książkę\n7 - wyszukaj książkę\n8 - inne\n9 - import danych z pliku tekstowego" +
                     "\n0 - posortowana lista książek\nWpisz -1 aby zakończyć program\n");
 
-            wybor = sc.nextInt();
+            wybor = Walidacja.sprawdzInt(-1, 9);
+
             if (wybor == -1) break;
-            else if (wybor < -1 || wybor > 9) System.out.println("Podano niepoprawną opcję, wybierz jeszcze raz.");
 
             switch (wybor) {
                 case 1:
@@ -50,7 +50,7 @@ public class Menu {
                     break;
                 case 7:
                     System.out.println("Wyszukiwanie według:\n1 - nazwiska autora\n2 - tytułu\n3 - kategorii tematycznej\n4 - powrót");
-                    wybor = sc.nextInt();
+                    wybor = Walidacja.sprawdzInt(1, 4);
                     sc.nextLine();
 
                     switch (wybor) {
@@ -75,7 +75,7 @@ public class Menu {
                 case 8:
                     System.out.println("Inne opcje:\n1 - statystyki wypożyczeń\n2 - 5 najczęściej wypożyczanych\n3 - 5 najbardziej poczytnych z każdej kategorii" +
                             "\n4 - 5 najbardziej poczytnych autorów\n5 - powrót");
-                    wybor = sc.nextInt();
+                    wybor = Walidacja.sprawdzInt(1, 5);
                     sc.nextLine();
 
                     switch (wybor) {
@@ -92,7 +92,7 @@ public class Menu {
                             biblioteka.wyswietl5NajpopularniejszychWKategorii();
                             break;
                         case 4:
-
+                            //todo 5 najbardziej poczytnych autorow
                             break;
                     }
                     break;
@@ -104,7 +104,23 @@ public class Menu {
                     biblioteka.importZPliku(sciezkaDoPliku);
                     break;
                 case 0:
-
+                    System.out.println("Sortowanie:\n1 - według nazwiska autora\n2 - według roku wydania\n" +
+                            "3 - według liczby wypozyczeń\n4 - według tytułu\n5 - powrót");
+                    wybor = Walidacja.sprawdzInt(1, 5);
+                    switch(wybor){
+                        case 1:
+                            biblioteka.sortujWgNaziwskaAutora();
+                            break;
+                        case 2:
+                            biblioteka.sortujWgRokuWydania();
+                            break;
+                        case 3:
+                            biblioteka.sortujWgLiczbyWypozyczen();
+                            break;
+                        case 4:
+                            biblioteka.sortujWgTytulu();
+                            break;
+                    }
                     break;
             }
         }
