@@ -4,11 +4,7 @@ import java.util.Scanner;
 
 public class Walidacja {
 
-    static Scanner sc;
-
-    public Walidacja(){
-        sc = new Scanner(System.in);
-    };
+    public static Scanner sc = new Scanner(System.in);
 
     public static String wprowadzString(){
         String s = null;
@@ -32,7 +28,7 @@ public class Walidacja {
         return Integer.parseInt(num);
     }
 
-    public static boolean isInteger(String s) {
+    static boolean isInteger(String s) {
         try {
             Integer.parseInt(s);
         } catch(NumberFormatException e) {
