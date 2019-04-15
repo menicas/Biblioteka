@@ -36,16 +36,15 @@ public class Biblioteka {
 
     private Ksiazka dodajKsiazke() {
         System.out.println("Podaj tytuł:");
-        String tytul = sc.nextLine();
+        String tytul = Walidacja.wprowadzString();
         System.out.println("Podaj imiona autora");
-        String imionaAutora = sc.nextLine();
+        String imionaAutora = Walidacja.wprowadzString();
         System.out.println("Podaj nazwisko autora:");
-        String nazwiskoAutora = sc.nextLine();
-        System.out.println("Podaj kategorie");
-        String kategorie = sc.nextLine();
-        System.out.println("Podaj rok wydania");
-        int rok = sc.nextInt();
-        sc.nextLine();
+        String nazwiskoAutora = Walidacja.wprowadzString();
+        System.out.println("Podaj kategorie (oddzielone średnikami (;))");
+        String kategorie = Walidacja.wprowadzString();
+        System.out.println("Podaj rok wydania (1970-2012)");
+        int rok = Walidacja.sprawdzInt(1970, 2012);  // todo DOKONCZYC BO NIE DZIALA
         Ksiazka dodanaKsiazka = new Ksiazka(tytul, imionaAutora, nazwiskoAutora, rok, kategorie, false, 0);
         ksiazki.add(dodanaKsiazka);
         ileKsiazek = ksiazki.size();
@@ -124,7 +123,7 @@ public class Biblioteka {
         System.out.println();
     }
 
-    //NAPRAWIĆ GDY MNIEJ NIZ 5 KSIAZEK MA WIECEJ NIZ 0 WYPOZYCZEN
+    //todo NAPRAWIĆ GDY MNIEJ NIZ 5 KSIAZEK MA WIECEJ NIZ 0 WYPOZYCZEN
     public void wyswietl5NajczesciejWypozyczanych() {
         ArrayList<Ksiazka> najczesciejWypozyczane = new ArrayList<>();
         for (Ksiazka k : this.ksiazki) {
@@ -142,17 +141,17 @@ public class Biblioteka {
         int i = 0;
         if (piecPierwszychRowne) {
             while (i < najczesciejWypozyczane.size() && liczbaWypozyczenPierwszejKsiazki == najczesciejWypozyczane.get(i).zwrocLiczbeWypozyczen()) {
-                this.wyswietlSkroconaKsiazke(najczesciejWypozyczane.get(i).zwrocId());
+                this.wyswietlKsiazke(najczesciejWypozyczane.get(i).zwrocId());
                 i++;
             }
         } else {
             for (i = 0; i < 5; i++) {
-                this.wyswietlSkroconaKsiazke(najczesciejWypozyczane.get(i).zwrocId());
+                this.wyswietlKsiazke(najczesciejWypozyczane.get(i).zwrocId());
             }
         }
     }
 
-    //REFACTOR ----------------------------------------------------------------------------------------------
+    //todo REFACTOR ----------------------------------------------------------------------------------------------
 
     public void wyswietl5NajpopularniejszychWKategorii() {
         ArrayList<Ksiazka> listaKsiazek;
@@ -169,7 +168,7 @@ public class Biblioteka {
             if (listaKsiazek.size() < 5) cnt = listaKsiazek.size();
             else cnt = 5;
             for (int i = 0; i < cnt; i++) {
-                this.wyswietlSkroconaKsiazke(listaKsiazek.get(i).zwrocId());
+                this.wyswietlKsiazke(listaKsiazek.get(i).zwrocId());
             }
         }
     }
