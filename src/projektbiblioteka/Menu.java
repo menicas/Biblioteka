@@ -122,7 +122,7 @@ public class Menu {
                     break;
                 case 9:
                     System.out.println("Podaj ścieżkę do pliku");
-                    String sciezkaDoPliku = sc.nextLine();
+                    String sciezkaDoPliku = Walidacja.wprowadzString();
                     biblioteka.importZPliku(sciezkaDoPliku);
                     break;
                 case 0:
@@ -131,16 +131,16 @@ public class Menu {
                     wybor = Walidacja.sprawdzInt(1, 5);
                     switch (wybor) {
                         case 1:
-                            biblioteka.sortujWgNaziwskaAutora();
+                            biblioteka.wyswietlTabKsiazek(biblioteka.sortujWgNaziwskaAutora());
                             break;
                         case 2:
-                            biblioteka.sortujWgRokuWydania();
+                            biblioteka.wyswietlTabKsiazek(biblioteka.sortujWgRokuWydania());
                             break;
                         case 3:
-                            biblioteka.sortujWgLiczbyWypozyczen();
+                            biblioteka.wyswietlTabKsiazek(biblioteka.sortujWgLiczbyWypozyczen());
                             break;
                         case 4:
-                            biblioteka.sortujWgTytulu();
+                            biblioteka.wyswietlTabKsiazek(biblioteka.sortujWgTytulu());
                             break;
                     }
                     break;
