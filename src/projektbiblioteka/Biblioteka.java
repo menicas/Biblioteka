@@ -39,9 +39,9 @@ public class Biblioteka {
     // ---------------------------------------------- 1 ----------------------------------------------
 
     public void wyswietlListeKsiazek() {
-        System.out.format("%-5s %-15s %-17s %-25s %-12s %-30s %-12s %-4s \n",
+        System.out.format("%-5s %-15s %-17s %-40s %-12s %-40s %-12s %-4s \n",
                 "ID", "imię autora", "nazwisko autora", "tytuł", "rok wydania", "kategorie", "wypożyczona", "liczba wypożyczeń");
-        for (Ksiazka k : ksiazki) {
+        for (Ksiazka k : this.ksiazki) {
             this.wyswietlKsiazke(k.zwrocId());
         }
         System.out.println();
@@ -50,9 +50,9 @@ public class Biblioteka {
     // ---------------------------------------------- 2 ----------------------------------------------
 
     public void wyswietlSkroconaListeKsiazek() {
-        System.out.format("%-5s %-30s %-35s %-3s \n",
+        System.out.format("%-5s %-40s %-35s %-3s \n",
                 "ID", "tytuł", "autor", "wypożyczona");
-        for (Ksiazka k : ksiazki) {
+        for (Ksiazka k : this.ksiazki) {
             this.wyswietlSkroconaKsiazke(k.zwrocId());
         }
         System.out.println();
@@ -206,33 +206,34 @@ public class Biblioteka {
 
     // 8.2
 
-    //todo NAPRAWIĆ GDY MNIEJ NIZ 5 KSIAZEK MA WIECEJ NIZ 0 WYPOZYCZEN, 15.04 - w ogole przstalo dzialac
     public void wyswietl5NajczesciejWypozyczanych() {
-        ArrayList<Ksiazka> najczesciejWypozyczane = new ArrayList<>();
-        for (Ksiazka k : this.ksiazki) {
-            if (k.zwrocLiczbeWypozyczen() > 0) najczesciejWypozyczane.add(k);
-        }
-        Collections.sort(najczesciejWypozyczane);
-        boolean piecPierwszychRowne = true;
-        int liczbaWypozyczenPierwszejKsiazki = najczesciejWypozyczane.get(0).zwrocLiczbeWypozyczen();
-        for (int i = 1; i <= 5; i++) {
-            if (liczbaWypozyczenPierwszejKsiazki != najczesciejWypozyczane.get(i).zwrocLiczbeWypozyczen()) {
-                piecPierwszychRowne = false;
-                break;
+        Ksiazka[] tablicaKsiazek = this.sortujWgLiczbyWypozyczen();
+        int wypozyczeniaNajKsiazki = tablicaKsiazek[0].zwrocLiczbeWypozyczen();
+        if(wypozyczeniaNajKsiazki != 0){
+            boolean piecPierwszychRowne = true;
+            for(int i = 0; i < 5; i++){
+                if(wypozyczeniaNajKsiazki != tablicaKsiazek[i].zwrocLiczbeWypozyczen()){
+                    piecPierwszychRowne = false;
+                }
             }
-        }
-        int i = 0;
-        if (piecPierwszychRowne) {
-            while (i < najczesciejWypozyczane.size() && liczbaWypozyczenPierwszejKsiazki == najczesciejWypozyczane.get(i).zwrocLiczbeWypozyczen()) {
-                this.wyswietlKsiazke(najczesciejWypozyczane.get(i).zwrocId());
-                i++;
+            if(piecPierwszychRowne){
+                int liczbaWyswietlanychKsiazek = 0;
+                System.out.println("Więcej niż 5 książek ma taką samą liczbę wypożyczeń:");
+                while(wypozyczeniaNajKsiazki == tablicaKsiazek[liczbaWyswietlanychKsiazek].zwrocLiczbeWypozyczen()){
+                    this.wyswietlKsiazke(tablicaKsiazek[liczbaWyswietlanychKsiazek].zwrocId());
+                    liczbaWyswietlanychKsiazek++;
+                }
+            } else {
+                for(int i = 0; i < 5; i++){
+                    if(tablicaKsiazek[i].zwrocLiczbeWypozyczen() != 0){
+                        this.wyswietlKsiazke(tablicaKsiazek[i].zwrocId());
+                    }
+                }
             }
         } else {
-            for (i = 0; i < 5; i++) {
-                this.wyswietlKsiazke(najczesciejWypozyczane.get(i).zwrocId());
-            }
+            System.out.println("Żadna książka nie została jeszcze wypożyczona.");
         }
-    }
+     }
 
     // 8.3
 
@@ -282,7 +283,7 @@ public class Biblioteka {
     // ---------------------------------------------- 0 ----------------------------------------------
     // 0.1
 
-    public void sortujWgNaziwskaAutora() {
+    public Ksiazka[] sortujWgNaziwskaAutora() {
         Ksiazka[] sortowanieNazwiska = this.ksiazki.toArray(new Ksiazka[ksiazki.size()]);
         Ksiazka tmp;
         for (int i = 0; i < sortowanieNazwiska.length - 1; i++) {
@@ -294,14 +295,12 @@ public class Biblioteka {
                 }
             }
         }
-        for (Ksiazka k : sortowanieNazwiska) {
-            this.wyswietlKsiazke(k.zwrocId());
-        }
+        return sortowanieNazwiska;
     }
 
     // 0.2
 
-    public void sortujWgRokuWydania() {
+    public Ksiazka[] sortujWgRokuWydania() {
         Ksiazka[] sortowanieRokWydania = this.ksiazki.toArray(new Ksiazka[ksiazki.size()]);
         Ksiazka tmp;
         for (int i = 0; i < sortowanieRokWydania.length - 1; i++) {
@@ -316,11 +315,12 @@ public class Biblioteka {
         for (Ksiazka k : sortowanieRokWydania) {
             this.wyswietlKsiazke(k.zwrocId());
         }
+        return sortowanieRokWydania;
     }
 
     // 0.3
 
-    public void sortujWgLiczbyWypozyczen() {
+    public Ksiazka[] sortujWgLiczbyWypozyczen() {
         Ksiazka[] sortowanieLiczbaWypozyczen = this.ksiazki.toArray(new Ksiazka[ksiazki.size()]);
         Ksiazka tmp;
         for (int i = 0; i < sortowanieLiczbaWypozyczen.length - 1; i++) {
@@ -332,14 +332,12 @@ public class Biblioteka {
                 }
             }
         }
-        for (Ksiazka k : sortowanieLiczbaWypozyczen) {
-            this.wyswietlKsiazke(k.zwrocId());
-        }
+        return sortowanieLiczbaWypozyczen;
     }
 
     // 0.4
 
-    public void sortujWgTytulu() {
+    public Ksiazka[] sortujWgTytulu() {
         Ksiazka[] sortowanieTytul = this.ksiazki.toArray(new Ksiazka[ksiazki.size()]);
         Ksiazka tmp;
         for (int i = 0; i < sortowanieTytul.length - 1; i++) {
@@ -351,23 +349,28 @@ public class Biblioteka {
                 }
             }
         }
-        for (Ksiazka k : sortowanieTytul) {
+        return sortowanieTytul;
+    }
+
+    // ---------------------------------------------- METODY POMOCNICZE ----------------------------------------------
+
+    public void wyswietlTabKsiazek(Ksiazka[] tablicaKsiazek){
+        for(Ksiazka k : tablicaKsiazek){
             this.wyswietlKsiazke(k.zwrocId());
         }
     }
 
-    // ---------------------------------------------- METODY POMOCNICZE ----------------------------------------------
     // WYŚWIETLANIE KSIĄŻEK W KONSOLI
     private void wyswietlKsiazke(int id) {
         Ksiazka k = ksiazki.get(id);
-        System.out.format("%-5d %-15s %-17s %-25s %-12d %-30s %-12s %-4d \n",
+        System.out.format("%-5d %-15s %-17s %-40s %-12d %-40s %-12s %-4d \n",
                 k.zwrocId(), k.zwrocImionaAutora(), k.zwrocNazwiskoAutora(), k.zwrocTytul(),
                 k.zwrocRok(), k.zwrocKategorie(), (k.zwrocCzyWypozyczona()) ? "tak" : "nie", k.zwrocLiczbeWypozyczen());
     }
 
     private void wyswietlSkroconaKsiazke(int id) {
         Ksiazka k = ksiazki.get(id);
-        System.out.format("%-5d %-30s %-35s %-3s\n",
+        System.out.format("%-5d %-40s %-35s %-3s\n",
                 k.zwrocId(), k.zwrocTytul(), (k.zwrocInicjałyImionAutora() + k.zwrocNazwiskoAutora()), (k.zwrocCzyWypozyczona()) ? "tak" : "nie");
     }
 
