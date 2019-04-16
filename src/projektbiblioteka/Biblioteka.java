@@ -83,6 +83,7 @@ public class Biblioteka {
 
     // ---------------------------------------------- 4 ----------------------------------------------
 
+    //todo refactor - zapis do pliku
     public void edytujKsiazke(int id) { //zmienic wyswietlanie na pelna a nie skrocona
         Ksiazka k = ksiazki.get(id);
         System.out.println("Wybrałeś następującą książkę do edycji:");
@@ -155,20 +156,30 @@ public class Biblioteka {
     // 7.1
 
     public void szukajNazwisko(String szukane) {
+        boolean znaleziono = false;
         for (Ksiazka k : ksiazki) {
             if (k.zwrocNazwiskoAutora().toLowerCase().contains(szukane.toLowerCase())) {
                 wyswietlKsiazke(k.zwrocId());
+                znaleziono = true;
             }
+        }
+        if(!znaleziono){
+            System.out.println("Nie udało się znaleźć książki pasującej do podanego autora.");
         }
     }
 
     // 7.2
 
     public void szukajTytul(String szukane) {
+        boolean znaleziono = false;
         for (Ksiazka k : ksiazki) {
             if (k.zwrocTytul().toLowerCase().contains(szukane.toLowerCase())) {
                 wyswietlKsiazke(k.zwrocId());
+                znaleziono = true;
             }
+        }
+        if(!znaleziono){
+            System.out.println("Nie udało się znaleźć książki pasującej do podanego tytułu.");
         }
     }
 
@@ -177,15 +188,20 @@ public class Biblioteka {
     public void szukajKategorie(String szukane) {
         String maleSzukane = szukane.toLowerCase();
         String kategorie;
+        boolean znaleziono = false;
         for (Ksiazka k : ksiazki) {
             kategorie = k.zwrocKategorie();
             String[] tabKategorie = kategorie.split(";");
             for (String kategoria : tabKategorie) {
                 if (kategoria.equals(maleSzukane)) {
                     this.wyswietlKsiazke(k.zwrocId());
+                    znaleziono = true;
                     break;
                 }
             }
+        }
+        if(!znaleziono){
+            System.out.println("Nie udało się znaleźć żadnej książki w podanej kategorii");
         }
     }
 
@@ -312,9 +328,6 @@ public class Biblioteka {
                 }
             }
         }
-        for (Ksiazka k : sortowanieRokWydania) {
-            this.wyswietlKsiazke(k.zwrocId());
-        }
         return sortowanieRokWydania;
     }
 
@@ -375,6 +388,7 @@ public class Biblioteka {
     }
 
     // OPERACJE NA PLIKU Z DANYMI
+    //todo refactor - coś zrobić z zapisywaniem danych, aby nadpisanie zajmowało taką samą liczbę bajtów (np. tablica charów)
     private void zamianaTekstu(int idKsiazki, String coZamienic, String naCoZamienic) {
         try {
             raf = new RandomAccessFile(this.sciezkaDoPlikuZDanymi, "rw");

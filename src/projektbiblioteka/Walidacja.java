@@ -24,7 +24,7 @@ public class Walidacja {
                 System.out.println("Wprowadzono błędne dane, wprowadź ponownie.");
             }
             num = sc.nextLine();
-        } while (isInteger(num) && (Integer.parseInt(num) > max || Integer.parseInt(num) < min));
+        } while (!isInteger(num) || (Integer.parseInt(num) > max || Integer.parseInt(num) < min));
         return Integer.parseInt(num);
     }
 
