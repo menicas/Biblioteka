@@ -116,7 +116,7 @@ public class Menu {
                             biblioteka.wyswietl5NajpopularniejszychWKategorii();
                             break;
                         case 4:
-
+                            biblioteka.wyswietl5NajpopularniejszychAutorow();
                             break;
                     }
                     break;

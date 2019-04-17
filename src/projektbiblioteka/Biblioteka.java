@@ -1,9 +1,9 @@
 package projektbiblioteka;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Scanner;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 // Komentarze przed metodami oznaczają miejsce, w którym zostały wykorzystane w menu (plik Menu.java)
 
@@ -266,7 +266,11 @@ public class Biblioteka {
                 }
             }
             Collections.sort(listaKsiazek);
-            if (listaKsiazek.size() < 5) cnt = listaKsiazek.size();
+            if (listaKsiazek.size() == 0){
+                cnt = 0;
+                System.out.println("Nie wypożyczono jeszcze żadnej książki z tej kategorii.");
+            }
+            else if (listaKsiazek.size() < 5) cnt = listaKsiazek.size();
             else cnt = 5;
             for (int i = 0; i < cnt; i++) {
                 this.wyswietlKsiazke(listaKsiazek.get(i).zwrocId());
@@ -276,7 +280,30 @@ public class Biblioteka {
 
     // 8.4
 
-    //todo 5 najbardziej poczytnych autorow
+    //todo refactor - max 5 wynikow > 0
+    public void wyswietl5NajpopularniejszychAutorow(){
+        Map<String, Integer> autorzy = new TreeMap<String, Integer>();
+        String imionaAutora;
+        String nazwiskoAutora;
+        String klucz;
+        for(int i = 0; i < this.ksiazki.size(); i++){
+            imionaAutora = this.ksiazki.get(i).zwrocImionaAutora();
+            nazwiskoAutora = this.ksiazki.get(i).zwrocNazwiskoAutora();
+            klucz = imionaAutora + " " + nazwiskoAutora;
+            if(autorzy.containsKey(klucz)){
+                autorzy.put(klucz, autorzy.get(klucz) + this.ksiazki.get(i).zwrocLiczbeWypozyczen());
+            } else {
+                autorzy.put(klucz, this.ksiazki.get(i).zwrocLiczbeWypozyczen());
+            }
+        }
+        Map<String, Integer> posortowane = autorzy.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+
+        for(Map.Entry<String, Integer> entry : posortowane.entrySet()){
+            System.out.println("autor = " + entry.getKey() + ", liczba wypożyczeń: " + entry.getValue());
+        }
+    }
 
     // ---------------------------------------------- 9 ----------------------------------------------
 
@@ -388,7 +415,7 @@ public class Biblioteka {
     }
 
     // OPERACJE NA PLIKU Z DANYMI
-    //todo refactor - coś zrobić z zapisywaniem danych, aby nadpisanie zajmowało taką samą liczbę bajtów (np. tablica charów)
+    //todo refactor - zrobić coś z zapisywaniem danych, aby nadpisanie zajmowało taką samą liczbę bajtów (np. tablica charów)
     private void zamianaTekstu(int idKsiazki, String coZamienic, String naCoZamienic) {
         try {
             raf = new RandomAccessFile(this.sciezkaDoPlikuZDanymi, "rw");
