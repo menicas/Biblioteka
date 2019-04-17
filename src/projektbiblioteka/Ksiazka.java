@@ -1,6 +1,6 @@
 package projektbiblioteka;
 
-public class Ksiazka implements Comparable {
+public class Ksiazka implements Comparable, Cloneable {
 
     private static int id = 0;
 
@@ -98,5 +98,10 @@ public class Ksiazka implements Comparable {
     public int compareTo(Object k) {
         int wypozyczenia = ((Ksiazka) k).zwrocLiczbeWypozyczen();
         return wypozyczenia - this.liczbaWypozyczen;
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 }
