@@ -253,16 +253,31 @@ public class Biblioteka {
 
     // 8.3
 
-    //todo REFACTOR ----------------------------------------------------------------------------------------------
+    //todo REFACTOR niepoprawne zliczanie liczby wypozyczen
     public void wyswietl5NajpopularniejszychWKategorii() {
         ArrayList<Ksiazka> listaKsiazek;
         int cnt;
         for (String kategoria : this.istniejaceKategorie) {
             listaKsiazek = new ArrayList<>();
+            for(Ksiazka k : listaKsiazek){
+                System.out.println(k.zwrocTytul() + "kurwa");
+            }
             System.out.println("\nKategoria: " + kategoria);
             for (Ksiazka k : this.ksiazki) {
+                boolean powtarzaSie = false;
                 if (k.zwrocKategorie().contains(kategoria) && k.zwrocLiczbeWypozyczen() > 0) {
-                    listaKsiazek.add(ksiazki.get(k.zwrocId()));
+                    String autor = k.zwrocImionaAutora() + " " + k.zwrocNazwiskoAutora();
+                    for(int i = 0; i < listaKsiazek.size(); i++){
+                        if((listaKsiazek.get(i).zwrocImionaAutora() + " " + listaKsiazek.get(i).zwrocNazwiskoAutora()).equals(autor) &&
+                        listaKsiazek.get(i).zwrocTytul().equals(k.zwrocTytul())){
+                            listaKsiazek.get(i).ustawLiczbeWypoyczen(listaKsiazek.get(i).zwrocLiczbeWypozyczen() + k.zwrocLiczbeWypozyczen());
+                            powtarzaSie = true;
+                        }
+
+                    }
+                    if(!powtarzaSie){
+                        listaKsiazek.add(k);
+                    }
                 }
             }
             Collections.sort(listaKsiazek);

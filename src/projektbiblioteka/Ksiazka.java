@@ -90,9 +90,9 @@ public class Ksiazka implements Comparable {
         return this.czyWypozyczona;
     }
 
-    public int zwrocLiczbeWypozyczen() {
-        return liczbaWypozyczen;
-    }
+    public void ustawLiczbeWypoyczen(int n) { this.liczbaWypozyczen = n; }
+
+    public int zwrocLiczbeWypozyczen() { return liczbaWypozyczen; }
 
     @Override
     public int compareTo(Object k) {
