@@ -13,6 +13,13 @@ public class Ksiazka implements Comparable, Cloneable {
     private boolean czyWypozyczona;
     private int liczbaWypozyczen;
 
+    public Ksiazka(String tytul, String imionaAutora, String nazwiskoAutora, int liczbaWypozyczen, int id) {
+        this.tytul = tytul;
+        this.nazwiskoAutora = nazwiskoAutora;
+        this.imionaAutora = imionaAutora;
+        this.liczbaWypozyczen = liczbaWypozyczen;
+        this.bookId = id;
+    }
 
     public Ksiazka(String tytul, String imionaAutora, String nazwiskoAutora, int rok, String kategorie, boolean czyWypozyczona, int liczbaWypozyczen) {
         this.bookId = id;
@@ -90,9 +97,16 @@ public class Ksiazka implements Comparable, Cloneable {
         return this.czyWypozyczona;
     }
 
-    public void ustawLiczbeWypoyczen(int n) { this.liczbaWypozyczen = n; }
-
     public int zwrocLiczbeWypozyczen() { return liczbaWypozyczen; }
+
+    public Ksiazka dodajDoKsiazki(Ksiazka k){
+        int liczbaWypozyczen = this.liczbaWypozyczen + k.liczbaWypozyczen;
+        return new Ksiazka(this.tytul, this.imionaAutora, this.nazwiskoAutora, liczbaWypozyczen, this.zwrocId());
+    }
+
+    protected void ustawLiczbeWypozyczen(int liczbaWypozyczen){
+        this.liczbaWypozyczen = liczbaWypozyczen;
+    }
 
     @Override
     public int compareTo(Object k) {

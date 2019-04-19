@@ -1,6 +1,7 @@
 package projektbiblioteka;
 
 import java.io.*;
+import java.nio.channels.ClosedChannelException;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -122,6 +123,7 @@ public class Biblioteka {
 
 	// ---------------------------------------------- 5 ----------------------------------------------
 
+	//todo zabeczenie przed wypozyczeniem nieistniejacej ksiazki(za duzy indeks)
 	public void wypozyczKsiazke(int id) {
 		Ksiazka k = ksiazki.get(id);
 		String daneKsiazki = k.zwrocInicjałyImionAutora() + k.zwrocNazwiskoAutora() + ", " + k.zwrocTytul() + ", " + k.zwrocRok();
@@ -137,6 +139,7 @@ public class Biblioteka {
 
 	// ---------------------------------------------- 6 ----------------------------------------------
 
+	//todo zabeczenie przed zwroceniem nieistniejacej ksiazki(za duzy indeks)
 	public void zwrocKsiazke(int id) {
 		Ksiazka k = ksiazki.get(id);
 		String daneKsiazki = k.zwrocInicjałyImionAutora() + k.zwrocNazwiskoAutora() + ", " + k.zwrocTytul() + ", " + k.zwrocRok();
@@ -252,77 +255,67 @@ public class Biblioteka {
 	}
 
 	// 8.3
-	//todo sprobowac poprawic kod bo wydaje się zawiły i nieczytelny + przez kopie obiektu (chyba) nie sumuja sie wypozyczenia
 	public void wyswietl5NajpopularniejszychWKategorii() {
-		ArrayList<Ksiazka> listaKsiazek;
-		int cnt;
-		for (String kategoria : this.istniejaceKategorie) {
-			listaKsiazek = new ArrayList<>();
-			System.out.println("\nKategoria: " + kategoria);
-			for (Ksiazka k : this.ksiazki) {
-				boolean powtarzaSie = false;
-				Ksiazka tmp = null;
-				//klonowanie ksiazki, aby nie korzystac z "oryginalnej" i nie zmieniac jej liczby wypozyczen
-				try {
-					tmp = (Ksiazka) k.clone();
-				} catch (CloneNotSupportedException e) {
-					System.err.println("Clone not support");
-					e.printStackTrace();
-				}
-				if (tmp.zwrocKategorie().contains(kategoria) && tmp.zwrocLiczbeWypozyczen() > 0) {
-					String autor = tmp.zwrocImionaAutora() + " " + tmp.zwrocNazwiskoAutora();
-					for (int i = 0; i < listaKsiazek.size(); i++) {
-						if ((listaKsiazek.get(i).zwrocImionaAutora() + " " + listaKsiazek.get(i).zwrocNazwiskoAutora()).equals(autor) &&
-								listaKsiazek.get(i).zwrocTytul().equals(tmp.zwrocTytul())) {
-							listaKsiazek.get(i).ustawLiczbeWypoyczen(listaKsiazek.get(i).zwrocLiczbeWypozyczen() + tmp.zwrocLiczbeWypozyczen());
-							powtarzaSie = true;
-						}
+		// ta część metody odpowiada za pozbycie się powtórzeń książek i zsumowanie ich liczby wypożyczeń
+		ArrayList<Ksiazka> listaKsiazek = new ArrayList<>();
+		try{
+			for(Ksiazka k : this.ksiazki) listaKsiazek.add((Ksiazka)k.clone());
+		} catch (CloneNotSupportedException e){
+			System.out.println("Klonowanie nie powiodlo sie");
+			e.printStackTrace();
+		}
 
-					}
-					if (!powtarzaSie) {
-						listaKsiazek.add(tmp);
-					}
+		for(int i = 0; i < listaKsiazek.size(); i++){
+			for(int j = 0; j < listaKsiazek.size(); j++){
+				String autor1 = listaKsiazek.get(i).zwrocImionaAutora() + " " + listaKsiazek.get(i).zwrocNazwiskoAutora();
+				String autor2 = listaKsiazek.get(j).zwrocImionaAutora() + " " + listaKsiazek.get(j).zwrocNazwiskoAutora();
+				String tytul1 = listaKsiazek.get(i).zwrocTytul();
+				String tytul2 = listaKsiazek.get(j).zwrocTytul();
+				if(i != j && autor1.equals(autor2) && tytul1.equals(tytul2)){
+					listaKsiazek.get(i).ustawLiczbeWypozyczen(listaKsiazek.get(i).zwrocLiczbeWypozyczen() + listaKsiazek.get(j).zwrocLiczbeWypozyczen());
+					listaKsiazek.remove(j);
 				}
 			}
-			Collections.sort(listaKsiazek);
-			if (listaKsiazek.size() == 0) {
+		}
+
+		// algorytm wyświetlania książek dla każdej kategorii
+		Collections.sort(listaKsiazek);
+		ArrayList<Ksiazka> ksiazkiWKategori;
+		for(String kategoria : this.istniejaceKategorie){
+			ksiazkiWKategori = new ArrayList<>();
+			System.out.println("\nKategoria: " + kategoria + "\n");
+			for(Ksiazka k : listaKsiazek){
+				if(k.zwrocKategorie().contains(kategoria) && k.zwrocLiczbeWypozyczen() > 0){
+					ksiazkiWKategori.add(k);
+				}
+			}
+			int cnt;
+			if(ksiazkiWKategori.size() == 0){
 				cnt = 0;
-				System.out.println("Nie wypożyczono jeszcze żadnej książki z tej kategorii.");
-			} else if (listaKsiazek.size() < 5) cnt = listaKsiazek.size();
-			else cnt = 5;
-			for (int i = 0; i < cnt; i++) {
-				this.wyswietlKsiazke(listaKsiazek.get(i).zwrocId());
+				System.out.println("Żadna książka z tej kategorii nie została jeszcze wypożyczona");
+			} else if(ksiazkiWKategori.size() < 5){
+				cnt = ksiazkiWKategori.size();
+			} else {
+				cnt = 5;
+			}
+
+			// ponieważ kod operuje na skopiowanych książkach (które mają takie sam id jak oryginały)
+			// wyświetlanie zostało zaimplementowane w następujący sposób, a nie przy użyciu metody wyswietlKsiazka(id)
+			for(int i = 0; i < cnt; i++){
+				System.out.format("%-15s %-17s %-40s %-12d %-40s %-12s %-4d \n",
+					ksiazkiWKategori.get(i).zwrocImionaAutora(), ksiazkiWKategori.get(i).zwrocNazwiskoAutora(),
+						ksiazkiWKategori.get(i).zwrocTytul(), ksiazkiWKategori.get(i).zwrocRok(),
+						ksiazkiWKategori.get(i).zwrocKategorie(), (ksiazkiWKategori.get(i).zwrocCzyWypozyczona()) ? "tak" : "nie",
+						ksiazkiWKategori.get(i).zwrocLiczbeWypozyczen());
 			}
 		}
 	}
 
 	// 8.4
 
-	//todo refactor - max 5 wynikow > 0
+	//todo 5 najpopularniejszych autorow
 	public void wyswietl5NajpopularniejszychAutorow() {
-		Map<String, Integer> autorzy = new TreeMap<String, Integer>();
-		String imionaAutora;
-		String nazwiskoAutora;
-		String klucz;
-		for (int i = 0; i < this.ksiazki.size(); i++) {
-			imionaAutora = this.ksiazki.get(i).zwrocImionaAutora();
-			nazwiskoAutora = this.ksiazki.get(i).zwrocNazwiskoAutora();
-			klucz = imionaAutora + " " + nazwiskoAutora;
-			if (autorzy.containsKey(klucz)) {
-				autorzy.put(klucz, autorzy.get(klucz) + this.ksiazki.get(i).zwrocLiczbeWypozyczen());
-			} else {
-				autorzy.put(klucz, this.ksiazki.get(i).zwrocLiczbeWypozyczen());
-			}
-		}
-		Map<String, Integer> posortowane = autorzy.entrySet().stream()
-				.sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
 
-		for (Map.Entry<String, Integer> entry : posortowane.entrySet()) {
-			if(entry.getValue() > 0){
-				System.out.println(entry.getKey() + ", liczba wypożyczeń: " + entry.getValue());
-			}
-		}
 	}
 
 	// ---------------------------------------------- 9 ----------------------------------------------
