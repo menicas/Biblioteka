@@ -97,25 +97,53 @@ public class Ksiazka implements Comparable, Cloneable {
         return this.czyWypozyczona;
     }
 
-    public int zwrocLiczbeWypozyczen() { return liczbaWypozyczen; }
+    public int zwrocLiczbeWypozyczen() {
+        return liczbaWypozyczen;
+    }
 
-    public Ksiazka dodajDoKsiazki(Ksiazka k){
+    public Ksiazka dodajDoKsiazki(Ksiazka k) {
         int liczbaWypozyczen = this.liczbaWypozyczen + k.liczbaWypozyczen;
         return new Ksiazka(this.tytul, this.imionaAutora, this.nazwiskoAutora, liczbaWypozyczen, this.zwrocId());
     }
 
-    protected void ustawLiczbeWypozyczen(int liczbaWypozyczen){
+    protected void ustawLiczbeWypozyczen(int liczbaWypozyczen) {
         this.liczbaWypozyczen = liczbaWypozyczen;
+    }
+
+    // todo uzyc equals() i toString() tam, gdzie to wskazane
+
+    @Override
+    public String toString() {
+        return String.format("%-5d %-15s %-17s %-40s %-12d %-40s %-12s %-4d \n",
+                this.zwrocId(), this.zwrocImionaAutora(), this.zwrocNazwiskoAutora(), this.zwrocTytul(),
+                this.zwrocRok(), this.zwrocKategorie(), (this.zwrocCzyWypozyczona()) ? "tak" : "nie",
+                this.zwrocLiczbeWypozyczen());
+    }
+
+    @Override
+    public boolean equals(Object innaKsiazka) {
+        if (innaKsiazka == this) return true;
+        if (innaKsiazka == null) return false;
+        if (this.getClass() != innaKsiazka.getClass()) return false;
+        Ksiazka inna = (Ksiazka) innaKsiazka;
+        if (this.zwrocImionaAutora().equals(inna.zwrocImionaAutora()) &&
+                this.zwrocNazwiskoAutora().equals(inna.zwrocNazwiskoAutora()) &&
+                this.zwrocTytul().equals(inna.zwrocTytul())) {
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 
     @Override
     public int compareTo(Object k) {
         int wypozyczenia = ((Ksiazka) k).zwrocLiczbeWypozyczen();
         return wypozyczenia - this.liczbaWypozyczen;
-    }
-
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        return super.clone();
     }
 }
