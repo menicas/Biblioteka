@@ -267,11 +267,7 @@ public class Biblioteka {
 
 		for(int i = 0; i < listaKsiazek.size(); i++){
 			for(int j = 0; j < listaKsiazek.size(); j++){
-				String autor1 = listaKsiazek.get(i).zwrocImionaAutora() + " " + listaKsiazek.get(i).zwrocNazwiskoAutora();
-				String autor2 = listaKsiazek.get(j).zwrocImionaAutora() + " " + listaKsiazek.get(j).zwrocNazwiskoAutora();
-				String tytul1 = listaKsiazek.get(i).zwrocTytul();
-				String tytul2 = listaKsiazek.get(j).zwrocTytul();
-				if(i != j && autor1.equals(autor2) && tytul1.equals(tytul2)){
+				if(i != j && listaKsiazek.get(i).equals(listaKsiazek.get(j))){
 					listaKsiazek.get(i).ustawLiczbeWypozyczen(listaKsiazek.get(i).zwrocLiczbeWypozyczen() + listaKsiazek.get(j).zwrocLiczbeWypozyczen());
 					listaKsiazek.remove(j);
 				}
@@ -302,11 +298,7 @@ public class Biblioteka {
 			// ponieważ kod operuje na skopiowanych książkach (które mają takie sam id jak oryginały)
 			// wyświetlanie zostało zaimplementowane w następujący sposób, a nie przy użyciu metody wyswietlKsiazka(id)
 			for(int i = 0; i < cnt; i++){
-				System.out.format("%-15s %-17s %-40s %-12d %-40s %-12s %-4d \n",
-					ksiazkiWKategori.get(i).zwrocImionaAutora(), ksiazkiWKategori.get(i).zwrocNazwiskoAutora(),
-						ksiazkiWKategori.get(i).zwrocTytul(), ksiazkiWKategori.get(i).zwrocRok(),
-						ksiazkiWKategori.get(i).zwrocKategorie(), (ksiazkiWKategori.get(i).zwrocCzyWypozyczona()) ? "tak" : "nie",
-						ksiazkiWKategori.get(i).zwrocLiczbeWypozyczen());
+				System.out.format(ksiazkiWKategori.get(i).toString());
 			}
 		}
 	}
@@ -315,7 +307,42 @@ public class Biblioteka {
 
 	//todo 5 najpopularniejszych autorow
 	public void wyswietl5NajpopularniejszychAutorow() {
+		ArrayList<String> autorzy = new ArrayList<>();
+		// wypelnienie listy autorzy wszystkimi autorami ksiazek z biblioteki bez powtorzen
+		for(Ksiazka k : this.ksiazki){
+			String autor = k.zwrocImionaAutora() + " " + k.zwrocNazwiskoAutora();
+			if(!autorzy.contains(autor)){
+				autorzy.add(autor);
+			}
+		}
+		int[] wypozyczenia = new int[autorzy.size()];
+		// umieszczenie w tablicy wypozyczenia liczby wypozyczen wszstkich ksiazek autora o tym samym ideksie w liście autorzy
+		for(int i = 0; i < autorzy.size(); i++){
+			for(Ksiazka k : this.ksiazki){
+				String autorKsiazki = k.zwrocImionaAutora() + " " + k.zwrocNazwiskoAutora();
+				if(autorzy.get(i).equals(autorKsiazki)){
+					wypozyczenia[i] += k.zwrocLiczbeWypozyczen();
+				}
+			}
+		}
+		int tmp;
+		String autorTmp;
+		for(int i = 0; i < autorzy.size() - 1; i++){
+			for(int j = 0; j < autorzy.size() - 1; j++){
+				if(wypozyczenia[j] < wypozyczenia[j + 1]){
+					tmp = wypozyczenia[j];
+					wypozyczenia[j] = wypozyczenia[j + 1];
+					wypozyczenia[j + 1] = tmp;
+					autorTmp = autorzy.get(j);
+					autorzy.set(j, autorzy.get(j + 1));
+					autorzy.set(j + 1, autorTmp);
+				}
+			}
+		}
 
+		for(int i = 0; i < autorzy.size(); i++){
+			System.out.println(autorzy.get(i) + ", liczba wypożyczeń: " + wypozyczenia[i]);
+		}
 	}
 
 	// ---------------------------------------------- 9 ----------------------------------------------
