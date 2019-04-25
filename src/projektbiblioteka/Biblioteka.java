@@ -1,10 +1,9 @@
 package projektbiblioteka;
 
 import java.io.*;
-import java.nio.channels.ClosedChannelException;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Scanner;
 
 // Komentarze przed metodami oznaczają miejsce, w którym zostały wykorzystane w menu (plik Menu.java)
 
@@ -16,11 +15,8 @@ public class Biblioteka {
 	private int ileObecnieWypozyczonych = 0;
 	private int ileWszystkichWypozyczen = 0;
 	private String sciezkaDoPlikuZDanymi = "/home/pawel/Projects/Java/ProjektBiblioteka/biblioteka.dat";
-	private FileWriter file = null;
-	private BufferedWriter bufferedWriter = null;
 	private Scanner sc = new Scanner(System.in);
 	private Scanner reader = null;
-	private RandomAccessFile raf = null;
 
 	public Biblioteka() {
 		try {
@@ -258,16 +254,16 @@ public class Biblioteka {
 	public void wyswietl5NajpopularniejszychWKategorii() {
 		// ta część metody odpowiada za pozbycie się powtórzeń książek i zsumowanie ich liczby wypożyczeń
 		ArrayList<Ksiazka> listaKsiazek = new ArrayList<>();
-		try{
-			for(Ksiazka k : this.ksiazki) listaKsiazek.add((Ksiazka)k.clone());
-		} catch (CloneNotSupportedException e){
+		try {
+			for (Ksiazka k : this.ksiazki) listaKsiazek.add((Ksiazka) k.clone());
+		} catch (CloneNotSupportedException e) {
 			System.out.println("Klonowanie nie powiodlo sie");
 			e.printStackTrace();
 		}
 
-		for(int i = 0; i < listaKsiazek.size(); i++){
-			for(int j = 0; j < listaKsiazek.size(); j++){
-				if(i != j && listaKsiazek.get(i).equals(listaKsiazek.get(j))){
+		for (int i = 0; i < listaKsiazek.size(); i++) {
+			for (int j = 0; j < listaKsiazek.size(); j++) {
+				if (i != j && listaKsiazek.get(i).equals(listaKsiazek.get(j))) {
 					listaKsiazek.get(i).ustawLiczbeWypozyczen(listaKsiazek.get(i).zwrocLiczbeWypozyczen() + listaKsiazek.get(j).zwrocLiczbeWypozyczen());
 					listaKsiazek.remove(j);
 				}
@@ -277,19 +273,19 @@ public class Biblioteka {
 		// algorytm wyświetlania książek dla każdej kategorii
 		Collections.sort(listaKsiazek);
 		ArrayList<Ksiazka> ksiazkiWKategori;
-		for(String kategoria : this.istniejaceKategorie){
+		for (String kategoria : this.istniejaceKategorie) {
 			ksiazkiWKategori = new ArrayList<>();
-			System.out.println("\nKategoria: " + kategoria + "\n");
-			for(Ksiazka k : listaKsiazek){
-				if(k.zwrocKategorie().contains(kategoria) && k.zwrocLiczbeWypozyczen() > 0){
+			System.out.println("\nKategoria: " + kategoria);
+			for (Ksiazka k : listaKsiazek) {
+				if (k.zwrocKategorie().contains(kategoria) && k.zwrocLiczbeWypozyczen() > 0) {
 					ksiazkiWKategori.add(k);
 				}
 			}
 			int cnt;
-			if(ksiazkiWKategori.size() == 0){
+			if (ksiazkiWKategori.size() == 0) {
 				cnt = 0;
 				System.out.println("Żadna książka z tej kategorii nie została jeszcze wypożyczona");
-			} else if(ksiazkiWKategori.size() < 5){
+			} else if (ksiazkiWKategori.size() < 5) {
 				cnt = ksiazkiWKategori.size();
 			} else {
 				cnt = 5;
@@ -297,39 +293,25 @@ public class Biblioteka {
 
 			// ponieważ kod operuje na skopiowanych książkach (które mają takie sam id jak oryginały)
 			// wyświetlanie zostało zaimplementowane w następujący sposób, a nie przy użyciu metody wyswietlKsiazka(id)
-			for(int i = 0; i < cnt; i++){
-				System.out.format(ksiazkiWKategori.get(i).toString());
+			for (int i = 0; i < cnt; i++) {
+				System.out.println(ksiazkiWKategori.get(i).toString());
 			}
+			System.out.println();
 		}
 	}
 
 	// 8.4
 
-	//todo 5 najpopularniejszych autorow
 	public void wyswietl5NajpopularniejszychAutorow() {
-		ArrayList<String> autorzy = new ArrayList<>();
-		// wypelnienie listy autorzy wszystkimi autorami ksiazek z biblioteki bez powtorzen
-		for(Ksiazka k : this.ksiazki){
-			String autor = k.zwrocImionaAutora() + " " + k.zwrocNazwiskoAutora();
-			if(!autorzy.contains(autor)){
-				autorzy.add(autor);
-			}
-		}
-		int[] wypozyczenia = new int[autorzy.size()];
-		// umieszczenie w tablicy wypozyczenia liczby wypozyczen wszstkich ksiazek autora o tym samym ideksie w liście autorzy
-		for(int i = 0; i < autorzy.size(); i++){
-			for(Ksiazka k : this.ksiazki){
-				String autorKsiazki = k.zwrocImionaAutora() + " " + k.zwrocNazwiskoAutora();
-				if(autorzy.get(i).equals(autorKsiazki)){
-					wypozyczenia[i] += k.zwrocLiczbeWypozyczen();
-				}
-			}
-		}
+		ArrayList<String> autorzy = this.zwrocListeAutorow();
+		int[] wypozyczenia = this.zwrocTabliceWypozyczenAutorow(autorzy);
+
 		int tmp;
 		String autorTmp;
-		for(int i = 0; i < autorzy.size() - 1; i++){
-			for(int j = 0; j < autorzy.size() - 1; j++){
-				if(wypozyczenia[j] < wypozyczenia[j + 1]){
+		//sortowanie obu struktur wg liczby wypozyczen;
+		for (int i = 0; i < autorzy.size() - 1; i++) {
+			for (int j = 0; j < autorzy.size() - 1; j++) {
+				if (wypozyczenia[j] < wypozyczenia[j + 1]) {
 					tmp = wypozyczenia[j];
 					wypozyczenia[j] = wypozyczenia[j + 1];
 					wypozyczenia[j + 1] = tmp;
@@ -339,9 +321,13 @@ public class Biblioteka {
 				}
 			}
 		}
-
-		for(int i = 0; i < autorzy.size(); i++){
-			System.out.println(autorzy.get(i) + ", liczba wypożyczeń: " + wypozyczenia[i]);
+		int cnt =  autorzy.size() > 5 ? 5 : autorzy.size();
+		for (int i = 0; i < cnt; i++) {
+			if (wypozyczenia[i] > 0){
+				String autor = autorzy.get(i);
+				System.out.println(autor + ", liczba wypożyczeń: " + wypozyczenia[i] + ", najpopularniejsza książka - \"" +
+						this.zwrocNajpoupularniejszaKsiazkeAutora(autor).zwrocTytul() + "\"");
+			}
 		}
 	}
 
@@ -443,22 +429,57 @@ public class Biblioteka {
 	// WYŚWIETLANIE KSIĄŻEK W KONSOLI
 	private void wyswietlKsiazke(int id) {
 		Ksiazka k = ksiazki.get(id);
-		System.out.format("%-5d %-15s %-17s %-40s %-12d %-40s %-12s %-4d \n",
-				k.zwrocId(), k.zwrocImionaAutora(), k.zwrocNazwiskoAutora(), k.zwrocTytul(),
-				k.zwrocRok(), k.zwrocKategorie(), (k.zwrocCzyWypozyczona()) ? "tak" : "nie", k.zwrocLiczbeWypozyczen());
+		System.out.println(k.toString());
 	}
 
 	private void wyswietlSkroconaKsiazke(int id) {
 		Ksiazka k = ksiazki.get(id);
-		System.out.format("%-5d %-40s %-35s %-3s\n",
-				k.zwrocId(), k.zwrocTytul(), (k.zwrocInicjałyImionAutora() + k.zwrocNazwiskoAutora()), (k.zwrocCzyWypozyczona()) ? "tak" : "nie");
+		System.out.println(k.toShortString());
+	}
+
+	private ArrayList<String> zwrocListeAutorow(){
+		ArrayList<String> autorzy = new ArrayList<>(this.ksiazki.size());
+		for (Ksiazka k : this.ksiazki) {
+			String autor = k.zwrocImionaAutora() + " " + k.zwrocNazwiskoAutora();
+			if (!autorzy.contains(autor)) {
+				autorzy.add(autor);
+			}
+		}
+		return autorzy;
+	}
+
+	private int[] zwrocTabliceWypozyczenAutorow(ArrayList<String> autorzy){
+		int[] wypozyczenia = new int[autorzy.size()];
+		for (int i = 0; i < autorzy.size(); i++) {
+			for (Ksiazka k : this.ksiazki) {
+				String autorKsiazki = k.zwrocImionaAutora() + " " + k.zwrocNazwiskoAutora();
+				if (autorzy.get(i).equals(autorKsiazki)) {
+					wypozyczenia[i] += k.zwrocLiczbeWypozyczen();
+				}
+			}
+		}
+		return wypozyczenia;
+	}
+
+	private Ksiazka zwrocNajpoupularniejszaKsiazkeAutora(String autor){
+		Ksiazka najpopularniejsza = null;
+		for(Ksiazka k : this.ksiazki){
+			if(autor.equals(k.zwrocImionaAutora() + " " + k.zwrocNazwiskoAutora())){
+				if(najpopularniejsza == null){
+					najpopularniejsza = k;
+				} else if ( najpopularniejsza.zwrocLiczbeWypozyczen() < k.zwrocLiczbeWypozyczen()){
+					najpopularniejsza = k;
+				}
+			}
+		}
+		return najpopularniejsza;
 	}
 
 	// OPERACJE NA PLIKU Z DANYMI
 	//todo refactor - zrobić coś z zapisywaniem danych, aby nadpisanie zajmowało taką samą liczbę bajtów (np. tablica charów)
 	private void zamianaTekstu(int idKsiazki, String coZamienic, String naCoZamienic) {
 		try {
-			raf = new RandomAccessFile(this.sciezkaDoPlikuZDanymi, "rw");
+			RandomAccessFile raf = new RandomAccessFile(this.sciezkaDoPlikuZDanymi, "rw");
 			raf.seek(0);
 			for (int i = 0; i < idKsiazki; i++) {
 				raf.readLine();
@@ -489,8 +510,8 @@ public class Biblioteka {
 		dane = dane.substring(0, dane.length() - 2);
 		dane = String.format(dane + "; %s; %d", (k.zwrocCzyWypozyczona()) ? "tak" : "nie", k.zwrocLiczbeWypozyczen());
 		try {
-			file = new FileWriter(this.sciezkaDoPlikuZDanymi, true);
-			bufferedWriter = new BufferedWriter(file);
+			FileWriter file = new FileWriter(this.sciezkaDoPlikuZDanymi, true);
+			BufferedWriter bufferedWriter = new BufferedWriter(file);
 			bufferedWriter.write(dane);
 			bufferedWriter.newLine();
 			bufferedWriter.close();
@@ -502,28 +523,21 @@ public class Biblioteka {
 	}
 
 	private Ksiazka odczytajZPliku(Scanner read) {
+
 		String[] data = read.nextLine().split("; ");
 		String imiona = data[0].split(", ")[0];
 		String nazwisko = data[0].split(", ")[1];
 		String tytul = data[1];
 		int rok = Integer.parseInt(data[2]);
 		String kategorie = data[3].replaceAll(", ", ";");
-		boolean czyWypozyczona;
-		if (data.length > 4) {
-			czyWypozyczona = data[4].equals("tak");
-		} else {
-			czyWypozyczona = false;
-		}
-		int liczbaWypozyczen;
-		if (data.length > 5) {
-			liczbaWypozyczen = Integer.parseInt(data[5]);
-		} else {
-			liczbaWypozyczen = 0;
-		}
+		boolean czyWypozyczona = data[4].equals("tak");
+		int liczbaWypozyczen = Integer.parseInt(data[5]);
+
 		if (czyWypozyczona) this.ileObecnieWypozyczonych++;
 		this.ileWszystkichWypozyczen += liczbaWypozyczen;
 		Ksiazka odczytanaKsiazka = new Ksiazka(tytul, imiona, nazwisko, rok, kategorie, czyWypozyczona, liczbaWypozyczen);
 		ksiazki.add(odczytanaKsiazka);
+
 		//dodaj kategorie do tablicy istniejaceKategorie
 		String[] tabKategorii = kategorie.split(";");
 		for (String kategoria : tabKategorii) {
