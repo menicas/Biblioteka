@@ -1,9 +1,7 @@
 package projektbiblioteka;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Scanner;
+import java.util.*;
 
 // Komentarze przed metodami oznaczają miejsce, w którym zostały wykorzystane w menu (plik Menu.java)
 
@@ -80,7 +78,6 @@ public class Biblioteka {
 
 	// ---------------------------------------------- 4 ----------------------------------------------
 
-	//todo refactor - zapis do pliku
 	public void edytujKsiazke(int id) { //zmienic wyswietlanie na pelna a nie skrocona
 		Ksiazka k = ksiazki.get(id);
 		System.out.println("Wybrałeś następującą książkę do edycji:");
@@ -115,11 +112,11 @@ public class Biblioteka {
 				break;
 			default:
 		}
+		this.zamianaDanych(k, k.zwrocId());
 	}
 
 	// ---------------------------------------------- 5 ----------------------------------------------
 
-	//todo zabeczenie przed wypozyczeniem nieistniejacej ksiazki(za duzy indeks)
 	public void wypozyczKsiazke(int id) {
 		Ksiazka k = ksiazki.get(id);
 		String daneKsiazki = k.zwrocInicjałyImionAutora() + k.zwrocNazwiskoAutora() + ", " + k.zwrocTytul() + ", " + k.zwrocRok();
@@ -135,7 +132,6 @@ public class Biblioteka {
 
 	// ---------------------------------------------- 6 ----------------------------------------------
 
-	//todo zabeczenie przed zwroceniem nieistniejacej ksiazki(za duzy indeks)
 	public void zwrocKsiazke(int id) {
 		Ksiazka k = ksiazki.get(id);
 		String daneKsiazki = k.zwrocInicjałyImionAutora() + k.zwrocNazwiskoAutora() + ", " + k.zwrocTytul() + ", " + k.zwrocRok();
@@ -255,20 +251,29 @@ public class Biblioteka {
 		// ta część metody odpowiada za pozbycie się powtórzeń książek i zsumowanie ich liczby wypożyczeń
 		ArrayList<Ksiazka> listaKsiazek = new ArrayList<>();
 		try {
-			for (Ksiazka k : this.ksiazki) listaKsiazek.add((Ksiazka) k.clone());
+			for (Ksiazka k : this.ksiazki) {
+				if(!listaKsiazek.contains(k)) {
+					listaKsiazek.add((Ksiazka) k.clone());
+				}
+			}
 		} catch (CloneNotSupportedException e) {
 			System.out.println("Klonowanie nie powiodlo sie");
 			e.printStackTrace();
 		}
 
-		for (int i = 0; i < listaKsiazek.size(); i++) {
-			for (int j = 0; j < listaKsiazek.size(); j++) {
-				if (i != j && listaKsiazek.get(i).equals(listaKsiazek.get(j))) {
-					listaKsiazek.get(i).ustawLiczbeWypozyczen(listaKsiazek.get(i).zwrocLiczbeWypozyczen() + listaKsiazek.get(j).zwrocLiczbeWypozyczen());
-					listaKsiazek.remove(j);
+		Iterator<Ksiazka> it;
+
+		for(it = listaKsiazek.iterator(); it.hasNext(); ){
+			Ksiazka it1 = it.next();
+			for(Iterator<Ksiazka> itt = this.ksiazki.iterator(); itt.hasNext(); ){
+				Ksiazka it2 = itt.next();
+				if (it1.equals(it2) && !it1.toString().equals(it2.toString())){
+					System.out.println("OKEJ");
+					it1.ustawLiczbeWypozyczen(it1.zwrocLiczbeWypozyczen() + it2.zwrocLiczbeWypozyczen());
 				}
 			}
 		}
+
 
 		// algorytm wyświetlania książek dla każdej kategorii
 		Collections.sort(listaKsiazek);
@@ -476,7 +481,6 @@ public class Biblioteka {
 	}
 
 	// OPERACJE NA PLIKU Z DANYMI
-	//todo refactor - zrobić coś z zapisywaniem danych, aby nadpisanie zajmowało taką samą liczbę bajtów (np. tablica charów)
 	private void zamianaTekstu(int idKsiazki, String coZamienic, String naCoZamienic) {
 		try {
 			RandomAccessFile raf = new RandomAccessFile(this.sciezkaDoPlikuZDanymi, "rw");
@@ -496,30 +500,58 @@ public class Biblioteka {
 		}
 	}
 
-	private void zapisDoPliku(Ksiazka k) {
-		String[] tabKategorii = k.zwrocKategorie().split(";");
-		for (String kategoria : tabKategorii) {
-			if (!istniejaceKategorie.contains(kategoria)) {
-				istniejaceKategorie.add(kategoria);
+	//todo cleanup, ulepszenie zapisu
+	private void zamianaDanych(Ksiazka k, int idKsiazki){
+
+		String dane = this.pobierzDaneDoZapisu(k);
+
+		try{
+			RandomAccessFile raf = new RandomAccessFile(sciezkaDoPlikuZDanymi, "rw");
+
+			for(int i = 0; i < idKsiazki; i++){
+				raf.readLine();
 			}
-		}
-		String dane = String.format("%s, %s; %s; %d; ", k.zwrocImionaAutora(), k.zwrocNazwiskoAutora(), k.zwrocTytul(), k.zwrocRok());
-		for (String s : tabKategorii) {
-			dane += s + ", ";
-		}
-		dane = dane.substring(0, dane.length() - 2);
-		dane = String.format(dane + "; %s; %d", (k.zwrocCzyWypozyczona()) ? "tak" : "nie", k.zwrocLiczbeWypozyczen());
-		try {
-			FileWriter file = new FileWriter(this.sciezkaDoPlikuZDanymi, true);
-			BufferedWriter bufferedWriter = new BufferedWriter(file);
-			bufferedWriter.write(dane);
-			bufferedWriter.newLine();
-			bufferedWriter.close();
+
+			char[] c = new char[200];
+			Arrays.fill(c, ' ');
+
+
+			for(int i = 0; i < dane.length(); i++){
+				c[i] = dane.charAt(i);
+			}
+
+			for(int i = 0; i < c.length; i++){
+				raf.write(c[i]);
+			}
+
+			raf.close();
 		} catch (IOException e) {
-			System.out.println("Nie udało się zapisać do pliku - biblioteka.dat");
+			System.err.println("Błąd I/O");
 			e.printStackTrace();
 		}
-		reader.close();
+	}
+
+	//todo refactor petla zapisu danych i przepisywania do trablicy charow jako jedno
+	public void zapisDoPliku(Ksiazka k){
+		String dane = this.pobierzDaneDoZapisu(k);
+
+		try {
+			RandomAccessFile raf = new RandomAccessFile(sciezkaDoPlikuZDanymi,
+					"rw");
+			char[] c = new char[200];
+			Arrays.fill(c, ' ');
+			for(int i = 0; i < dane.length(); i++){
+				c[i] = dane.charAt(i);
+			}
+			raf.seek(raf.length());
+			for(int i = 0; i < c.length; i++){
+				raf.write(c[i]);
+			}
+			raf.writeChar('\n');
+			raf.close();
+		} catch (IOException e){
+			e.printStackTrace();
+		}
 	}
 
 	private Ksiazka odczytajZPliku(Scanner read) {
@@ -530,8 +562,18 @@ public class Biblioteka {
 		String tytul = data[1];
 		int rok = Integer.parseInt(data[2]);
 		String kategorie = data[3].replaceAll(", ", ";");
-		boolean czyWypozyczona = data[4].equals("tak");
-		int liczbaWypozyczen = Integer.parseInt(data[5]);
+		boolean czyWypozyczona;
+		if(data.length >= 5){
+			czyWypozyczona = data[4].equals("tak");
+		} else {
+			czyWypozyczona = false;
+		}
+		int liczbaWypozyczen;
+		if(data.length >= 6){
+			liczbaWypozyczen = Integer.parseInt(data[5]);
+		} else {
+			liczbaWypozyczen = 0;
+		}
 
 		if (czyWypozyczona) this.ileObecnieWypozyczonych++;
 		this.ileWszystkichWypozyczen += liczbaWypozyczen;
@@ -547,4 +589,23 @@ public class Biblioteka {
 		}
 		return odczytanaKsiazka;
 	}
+
+	private String pobierzDaneDoZapisu(Ksiazka k){
+		String[] tabKategorii = k.zwrocKategorie().split(";");
+		for (String kategoria : tabKategorii) {
+			if (!istniejaceKategorie.contains(kategoria)) {
+				istniejaceKategorie.add(kategoria);
+			}
+		}
+
+		String dane = String.format("%s, %s; %s; %d; ", k.zwrocImionaAutora(), k.zwrocNazwiskoAutora(), k.zwrocTytul(),
+				k.zwrocRok());
+		for (String s : tabKategorii) {
+			dane += s + ", ";
+		}
+		dane = dane.substring(0, dane.length() - 2);
+		dane = String.format(dane + "; %s; %d;", (k.zwrocCzyWypozyczona()) ? "tak" : "nie", k.zwrocLiczbeWypozyczen());
+		return dane;
+	}
+
 }

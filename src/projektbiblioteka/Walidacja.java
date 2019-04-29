@@ -6,6 +6,7 @@ public class Walidacja {
 
 	public static Scanner sc = new Scanner(System.in);
 
+	//todo wprowadzic wyrazenia regularne
 	public static String wprowadzString() {
 		String s = null;
 		do {

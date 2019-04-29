@@ -44,7 +44,7 @@ public class Menu {
 		while (true) {
 
 			System.out.println("Co chcesz zrobić?");
-			System.out.print("1 - wyświetl listę książek\n2 - wyświetl krótką listę książek\n3 - dodaj książkę\n4 - edytuj książkę(OSTROŻNIE)" +
+			System.out.print("1 - wyświetl listę książek\n2 - wyświetl krótką listę książek\n3 - dodaj książkę\n4 - edytuj książkę" +
 					"\n5 - wypożycz książkę\n6 - zwróć książkę\n7 - wyszukaj książkę\n8 - inne\n9 - import danych z pliku tekstowego" +
 					"\n0 - posortowana lista książek\nWpisz -1 aby zakończyć program\n");
 
@@ -68,11 +68,11 @@ public class Menu {
 					break;
 				case 5:
 					System.out.println("Podaj ID książki do wypożyczenia:");
-					biblioteka.wypozyczKsiazke(sc.nextInt());
+					biblioteka.wypozyczKsiazke(Walidacja.sprawdzInt(0, biblioteka.zwrocIleKsiazek() - 1));
 					break;
 				case 6:
 					System.out.println("Podaj ID książki do zwrotu:");
-					biblioteka.zwrocKsiazke(sc.nextInt());
+					biblioteka.zwrocKsiazke(Walidacja.sprawdzInt(0, biblioteka.zwrocIleKsiazek() - 1));
 					break;
 				case 7:
 					System.out.println("Wyszukiwanie według:\n1 - nazwiska autora\n2 - tytułu\n3 - kategorii tematycznej\n4 - powrót");
