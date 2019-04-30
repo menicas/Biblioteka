@@ -61,13 +61,13 @@ public class Biblioteka {
 
 	private Ksiazka dodajKsiazke() {
 		System.out.println("Podaj tytuł:");
-		String tytul = Walidacja.wprowadzString();
+		String tytul = Walidacja.wprowadzTytul();
 		System.out.println("Podaj imiona autora");
-		String imionaAutora = Walidacja.wprowadzString();
+		String imionaAutora = Walidacja.wprowadzDane();
 		System.out.println("Podaj nazwisko autora:");
-		String nazwiskoAutora = Walidacja.wprowadzString();
+		String nazwiskoAutora = Walidacja.wprowadzDane();
 		System.out.println("Podaj kategorie (oddzielone średnikami (;))");
-		String kategorie = Walidacja.wprowadzString();
+		String kategorie = Walidacja.wprowadzKategorie();
 		System.out.println("Podaj rok wydania (1970-2012)");
 		int rok = Walidacja.sprawdzInt(1970, 2012);
 		Ksiazka dodanaKsiazka = new Ksiazka(tytul, imionaAutora, nazwiskoAutora, rok, kategorie, false, 0);
@@ -91,15 +91,15 @@ public class Biblioteka {
 		int rok;
 		switch (wybor) {
 			case 0:
-				nowaWartosc = Walidacja.wprowadzString();
+				nowaWartosc = Walidacja.wprowadzDane();
 				k.ustawImionaAutora(nowaWartosc);
 				break;
 			case 1:
-				nowaWartosc = Walidacja.wprowadzString();
+				nowaWartosc = Walidacja.wprowadzDane();
 				k.ustawNazwiskoAutora(nowaWartosc);
 				break;
 			case 2:
-				nowaWartosc = Walidacja.wprowadzString();
+				nowaWartosc = Walidacja.wprowadzTytul();
 				k.ustawTytul(nowaWartosc);
 				break;
 			case 3:
@@ -107,12 +107,12 @@ public class Biblioteka {
 				k.ustawRok(rok);
 				break;
 			case 4:
-				nowaWartosc = Walidacja.wprowadzString();
+				nowaWartosc = Walidacja.wprowadzKategorie();
 				k.ustawKategorie(nowaWartosc);
 				break;
 			default:
 		}
-		this.zamianaDanych(k, k.zwrocId());
+		this.zapisDoPliku(k);
 	}
 
 	// ---------------------------------------------- 5 ----------------------------------------------
@@ -125,7 +125,7 @@ public class Biblioteka {
 		} else {
 			k.wypozycz();
 			System.out.println("Wypożyczono książkę (" + daneKsiazki + ")");
-			this.zamianaTekstu(id, "nie", "tak");
+			this.zapisDoPliku(k);
 			this.ileObecnieWypozyczonych++;
 		}
 	}
@@ -140,8 +140,7 @@ public class Biblioteka {
 			this.ileObecnieWypozyczonych--;
 			this.ileWszystkichWypozyczen++;
 			k.zwroc();
-			this.zamianaTekstu(id, "tak", "nie");
-			this.zamianaTekstu(id, String.valueOf(k.zwrocLiczbeWypozyczen() - 1), String.valueOf(k.zwrocLiczbeWypozyczen()));
+			this.zapisDoPliku(k);
 		} else {
 			System.out.println("Książka nie jest wypożyczona - nie można zwrócić (" + daneKsiazki + ")");
 		}
@@ -348,7 +347,7 @@ public class Biblioteka {
 			e.printStackTrace();
 		}
 		while (importFile.hasNext()) {
-			zapisDoPliku(odczytajZPliku(importFile));
+			this.zapisDoPliku(odczytajZPliku(importFile));
 		}
 		importFile.close();
 		System.out.println("Pomyślnie dokonano importu z " + sciezkaDoPliku);
@@ -481,75 +480,29 @@ public class Biblioteka {
 	}
 
 	// OPERACJE NA PLIKU Z DANYMI
-	private void zamianaTekstu(int idKsiazki, String coZamienic, String naCoZamienic) {
-		try {
-			RandomAccessFile raf = new RandomAccessFile(this.sciezkaDoPlikuZDanymi, "rw");
-			raf.seek(0);
-			for (int i = 0; i < idKsiazki; i++) {
-				raf.readLine();
-			}
-			long pozycjaLinii = raf.getFilePointer();
-			String line = raf.readLine();
-			line = line.replace("; " + coZamienic, "; " + naCoZamienic);
-			raf.seek(pozycjaLinii);
-			raf.writeBytes(line);
-			raf.close();
-		} catch (IOException e) {
-			System.out.println("Nie udało się zapisać do pliku: " + this.sciezkaDoPlikuZDanymi);
-			e.printStackTrace();
-		}
-	}
 
-	//todo cleanup, ulepszenie zapisu
-	private void zamianaDanych(Ksiazka k, int idKsiazki){
+	private void zapisDoPliku(Ksiazka k){
 
 		String dane = this.pobierzDaneDoZapisu(k);
-
 		try{
 			RandomAccessFile raf = new RandomAccessFile(sciezkaDoPlikuZDanymi, "rw");
 
-			for(int i = 0; i < idKsiazki; i++){
+			char[] c = new char[200];
+			Arrays.fill(c, ' ');
+
+			for(int i = 0; i < k.zwrocId(); i++){
 				raf.readLine();
 			}
 
-			char[] c = new char[200];
-			Arrays.fill(c, ' ');
-
-
-			for(int i = 0; i < dane.length(); i++){
-				c[i] = dane.charAt(i);
-			}
-
 			for(int i = 0; i < c.length; i++){
+				if(i < dane.length()) c[i] = dane.charAt(i);
 				raf.write(c[i]);
-			}
 
+			}
+			if(k.zwrocId() == this.ksiazki.size() - 1) raf.writeChar('\n');
 			raf.close();
 		} catch (IOException e) {
 			System.err.println("Błąd I/O");
-			e.printStackTrace();
-		}
-	}
-
-	//todo refactor petla zapisu danych i przepisywania do trablicy charow jako jedno
-	public void zapisDoPliku(Ksiazka k){
-		String dane = this.pobierzDaneDoZapisu(k);
-
-		try {
-			RandomAccessFile raf = new RandomAccessFile(sciezkaDoPlikuZDanymi,
-					"rw");
-			char[] c = new char[200];
-			Arrays.fill(c, ' ');
-			for(int i = 0; i < dane.length(); i++){
-				c[i] = dane.charAt(i);
-			}
-			raf.seek(raf.length());
-			for(int i = 0; i < c.length; i++){
-				raf.write(c[i]);
-			}
-			raf.writeChar('\n');
-			raf.close();
-		} catch (IOException e){
 			e.printStackTrace();
 		}
 	}

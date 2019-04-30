@@ -122,7 +122,7 @@ public class Menu {
 					break;
 				case 9:
 					System.out.println("Podaj ścieżkę do pliku");
-					String sciezkaDoPliku = Walidacja.wprowadzString();
+					String sciezkaDoPliku = Walidacja.wproadzSciezke();
 					biblioteka.importZPliku(sciezkaDoPliku);
 					break;
 				case 0:
