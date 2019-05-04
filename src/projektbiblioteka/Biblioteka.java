@@ -1,7 +1,13 @@
 package projektbiblioteka;
 
+import com.sun.xml.internal.ws.spi.db.RepeatedElementBridge;
+
 import java.io.*;
+import java.security.KeyStore;
 import java.util.*;
+
+import static java.util.Map.Entry.comparingByValue;
+import static java.util.stream.Collectors.toMap;
 
 // Komentarze przed metodami oznaczają miejsce, w którym zostały wykorzystane w menu (plik Menu.java)
 
@@ -263,12 +269,11 @@ public class Biblioteka {
 		Iterator<Ksiazka> it;
 
 		for(it = listaKsiazek.iterator(); it.hasNext(); ){
-			Ksiazka it1 = it.next();
+			Ksiazka k1 = it.next();
 			for(Iterator<Ksiazka> itt = this.ksiazki.iterator(); itt.hasNext(); ){
-				Ksiazka it2 = itt.next();
-				if (it1.equals(it2) && !it1.toString().equals(it2.toString())){
-					System.out.println("OKEJ");
-					it1.ustawLiczbeWypozyczen(it1.zwrocLiczbeWypozyczen() + it2.zwrocLiczbeWypozyczen());
+				Ksiazka k2 = itt.next();
+				if (k1.equals(k2) && !k1.toString().equals(k2.toString())){
+					k1.ustawLiczbeWypozyczen(k1.zwrocLiczbeWypozyczen() + k2.zwrocLiczbeWypozyczen());
 				}
 			}
 		}
@@ -325,6 +330,7 @@ public class Biblioteka {
 				}
 			}
 		}
+
 		int cnt =  autorzy.size() > 5 ? 5 : autorzy.size();
 		for (int i = 0; i < cnt; i++) {
 			if (wypozyczenia[i] > 0){
