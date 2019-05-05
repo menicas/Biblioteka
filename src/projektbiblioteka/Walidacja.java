@@ -1,5 +1,6 @@
 package projektbiblioteka;
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Walidacja {
@@ -46,26 +47,28 @@ public class Walidacja {
 				System.out.println("Wprowadzono błędne dane! Spróbuj ponownie!");
 			}
 			s = sc.nextLine();
-		} while (!s.matches("^([a-z]{3,};)*[a-z]+$"));
+		} while (!s.matches("^([a-z]{3,};)*[a-z]{3,}$"));
 		return s;
 	}
 
-	//todo regexp
-	public static int sprawdzInt(int min, int max) {
-		String num = null;
-		do {
-			if (num != null) {
-				System.out.println("Wprowadzono błędne dane, wprowadź ponownie.");
-			}
-			num = sc.nextLine();
-		} while (!isInteger(num) || (Integer.parseInt(num) > max || Integer.parseInt(num) < min));
-		return Integer.parseInt(num);
+	public static int wprowadzInt(int min, int max){
+		System.out.print("Wprowadź liczbę(" + min + "-" + max + "):");
+		Scanner read = new Scanner(System.in);
+		int liczba = 0;
+		try{
+			liczba = read.nextInt();
+			if(liczba > max || liczba < min) throw new InputMismatchException();
+		} catch (InputMismatchException e){
+			System.out.println("Błędne dane, spróbuj ponownie:");
+			return wprowadzInt(min, max);
+		}
+		return liczba;
 	}
 
-	static boolean isInteger(String s) {
+	private static boolean isInteger(String num){
 		try {
-			Integer.parseInt(s);
-		} catch (NumberFormatException e) {
+			Integer.parseInt(num);
+		} catch (NumberFormatException e){
 			return false;
 		}
 		return true;

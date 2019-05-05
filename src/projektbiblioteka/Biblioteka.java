@@ -75,7 +75,7 @@ public class Biblioteka {
 		System.out.println("Podaj kategorie (oddzielone średnikami (;))");
 		String kategorie = Walidacja.wprowadzKategorie();
 		System.out.println("Podaj rok wydania (1970-2012)");
-		int rok = Walidacja.sprawdzInt(1970, 2012);
+		int rok = Walidacja.wprowadzInt(1970, 2012);
 		Ksiazka dodanaKsiazka = new Ksiazka(tytul, imionaAutora, nazwiskoAutora, rok, kategorie, false, 0);
 		ksiazki.add(dodanaKsiazka);
 		ileKsiazek = ksiazki.size();
@@ -109,7 +109,7 @@ public class Biblioteka {
 				k.ustawTytul(nowaWartosc);
 				break;
 			case 3:
-				rok = Walidacja.sprawdzInt(1970, 2012);
+				rok = Walidacja.wprowadzInt(1970, 2012);
 				k.ustawRok(rok);
 				break;
 			case 4:

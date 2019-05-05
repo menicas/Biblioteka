@@ -48,7 +48,7 @@ public class Menu {
 					"\n5 - wypożycz książkę\n6 - zwróć książkę\n7 - wyszukaj książkę\n8 - inne\n9 - import danych z pliku tekstowego" +
 					"\n0 - posortowana lista książek\nWpisz -1 aby zakończyć program\n");
 
-			wybor = Walidacja.sprawdzInt(-1, 9);
+			wybor = Walidacja.wprowadzInt(-1, 9);
 
 			if (wybor == -1) System.exit(0);
 
@@ -68,15 +68,15 @@ public class Menu {
 					break;
 				case 5:
 					System.out.println("Podaj ID książki do wypożyczenia:");
-					biblioteka.wypozyczKsiazke(Walidacja.sprawdzInt(0, biblioteka.zwrocIleKsiazek() - 1));
+					biblioteka.wypozyczKsiazke(Walidacja.wprowadzInt(0, biblioteka.zwrocIleKsiazek() - 1));
 					break;
 				case 6:
 					System.out.println("Podaj ID książki do zwrotu:");
-					biblioteka.zwrocKsiazke(Walidacja.sprawdzInt(0, biblioteka.zwrocIleKsiazek() - 1));
+					biblioteka.zwrocKsiazke(Walidacja.wprowadzInt(0, biblioteka.zwrocIleKsiazek() - 1));
 					break;
 				case 7:
 					System.out.println("Wyszukiwanie według:\n1 - nazwiska autora\n2 - tytułu\n3 - kategorii tematycznej\n4 - powrót");
-					wybor = Walidacja.sprawdzInt(1, 4);
+					wybor = Walidacja.wprowadzInt(1, 4);
 
 					switch (wybor) {
 						case 1:
@@ -100,7 +100,7 @@ public class Menu {
 				case 8:
 					System.out.println("Inne opcje:\n1 - statystyki wypożyczeń\n2 - 5 najczęściej wypożyczanych\n3 - 5 najbardziej poczytnych z każdej kategorii" +
 							"\n4 - 5 najbardziej poczytnych autorów\n5 - powrót");
-					wybor = Walidacja.sprawdzInt(1, 5);
+					wybor = Walidacja.wprowadzInt(1, 5);
 
 					switch (wybor) {
 						case 1:
@@ -128,7 +128,7 @@ public class Menu {
 				case 0:
 					System.out.println("Sortowanie:\n1 - według nazwiska autora\n2 - według roku wydania\n" +
 							"3 - według liczby wypozyczeń\n4 - według tytułu\n5 - powrót");
-					wybor = Walidacja.sprawdzInt(1, 5);
+					wybor = Walidacja.wprowadzInt(1, 5);
 					switch (wybor) {
 						case 1:
 							biblioteka.wyswietlTabKsiazek(biblioteka.sortujWgNaziwskaAutora());
