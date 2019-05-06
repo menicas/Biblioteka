@@ -1,13 +1,11 @@
 package projektbiblioteka;
 
-import com.sun.xml.internal.ws.spi.db.RepeatedElementBridge;
-
-import java.io.*;
-import java.security.KeyStore;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.util.*;
 
-import static java.util.Map.Entry.comparingByValue;
-import static java.util.stream.Collectors.toMap;
 
 // Komentarze przed metodami oznaczają miejsce, w którym zostały wykorzystane w menu (plik Menu.java)
 
@@ -20,21 +18,17 @@ public class Biblioteka {
 	private int ileWszystkichWypozyczen = 0;
 	private String sciezkaDoPlikuZDanymi = "/home/pawel/Projects/Java/ProjektBiblioteka/biblioteka.dat";
 	private Scanner sc = new Scanner(System.in);
-	private Scanner reader = null;
 
 	public Biblioteka() {
-		try {
-			reader = new Scanner(new File(sciezkaDoPlikuZDanymi));
+		try (Scanner reader = new Scanner(new File(sciezkaDoPlikuZDanymi))) {
+			while (reader.hasNext()) {
+				odczytajZPliku(reader);
+			}
 		} catch (IOException e) {
 			System.out.println("Nie udało się otworzyć pliku biblioteka.dat");
 			e.printStackTrace();
 		}
-
-		while (reader.hasNext()) {
-			odczytajZPliku(reader);
-		}
 		ileKsiazek = ksiazki.size();
-		reader.close();
 	}
 
 	// ---------------------------------------------- 1 ----------------------------------------------
@@ -257,7 +251,7 @@ public class Biblioteka {
 		ArrayList<Ksiazka> listaKsiazek = new ArrayList<>();
 		try {
 			for (Ksiazka k : this.ksiazki) {
-				if(!listaKsiazek.contains(k)) {
+				if (!listaKsiazek.contains(k)) {
 					listaKsiazek.add((Ksiazka) k.clone());
 				}
 			}
@@ -268,11 +262,11 @@ public class Biblioteka {
 
 		Iterator<Ksiazka> it;
 
-		for(it = listaKsiazek.iterator(); it.hasNext(); ){
+		for (it = listaKsiazek.iterator(); it.hasNext(); ) {
 			Ksiazka k1 = it.next();
-			for(Iterator<Ksiazka> itt = this.ksiazki.iterator(); itt.hasNext(); ){
+			for (Iterator<Ksiazka> itt = this.ksiazki.iterator(); itt.hasNext(); ) {
 				Ksiazka k2 = itt.next();
-				if (k1.equals(k2) && !k1.toString().equals(k2.toString())){
+				if (k1.equals(k2) && !k1.toString().equals(k2.toString())) {
 					k1.ustawLiczbeWypozyczen(k1.zwrocLiczbeWypozyczen() + k2.zwrocLiczbeWypozyczen());
 				}
 			}
@@ -331,9 +325,9 @@ public class Biblioteka {
 			}
 		}
 
-		int cnt =  autorzy.size() > 5 ? 5 : autorzy.size();
+		int cnt = autorzy.size() > 5 ? 5 : autorzy.size();
 		for (int i = 0; i < cnt; i++) {
-			if (wypozyczenia[i] > 0){
+			if (wypozyczenia[i] > 0) {
 				String autor = autorzy.get(i);
 				System.out.println(autor + ", liczba wypożyczeń: " + wypozyczenia[i] + ", najpopularniejsza książka - \"" +
 						this.zwrocNajpoupularniejszaKsiazkeAutora(autor).zwrocTytul() + "\"");
@@ -345,17 +339,14 @@ public class Biblioteka {
 
 	// /home/pawel/Projects/Java/ProjektBiblioteka/bib.txt
 	public void importZPliku(String sciezkaDoPliku) {
-		Scanner importFile = null;
-		try {
-			importFile = new Scanner(new File(sciezkaDoPliku));
+		try (Scanner importFile = new Scanner(new File(sciezkaDoPliku))) {
+			while (importFile.hasNext()) {
+				this.zapisDoPliku(odczytajZPliku(importFile));
+			}
 		} catch (FileNotFoundException e) {
 			System.out.println("Nie znaleziono pliku: " + sciezkaDoPliku);
 			e.printStackTrace();
 		}
-		while (importFile.hasNext()) {
-			this.zapisDoPliku(odczytajZPliku(importFile));
-		}
-		importFile.close();
 		System.out.println("Pomyślnie dokonano importu z " + sciezkaDoPliku);
 	}
 
@@ -447,7 +438,7 @@ public class Biblioteka {
 		System.out.println(k.toShortString());
 	}
 
-	private ArrayList<String> zwrocListeAutorow(){
+	private ArrayList<String> zwrocListeAutorow() {
 		ArrayList<String> autorzy = new ArrayList<>(this.ksiazki.size());
 		for (Ksiazka k : this.ksiazki) {
 			String autor = k.zwrocImionaAutora() + " " + k.zwrocNazwiskoAutora();
@@ -458,7 +449,7 @@ public class Biblioteka {
 		return autorzy;
 	}
 
-	private int[] zwrocTabliceWypozyczenAutorow(ArrayList<String> autorzy){
+	private int[] zwrocTabliceWypozyczenAutorow(ArrayList<String> autorzy) {
 		int[] wypozyczenia = new int[autorzy.size()];
 		for (int i = 0; i < autorzy.size(); i++) {
 			for (Ksiazka k : this.ksiazki) {
@@ -471,13 +462,13 @@ public class Biblioteka {
 		return wypozyczenia;
 	}
 
-	private Ksiazka zwrocNajpoupularniejszaKsiazkeAutora(String autor){
+	private Ksiazka zwrocNajpoupularniejszaKsiazkeAutora(String autor) {
 		Ksiazka najpopularniejsza = null;
-		for(Ksiazka k : this.ksiazki){
-			if(autor.equals(k.zwrocImionaAutora() + " " + k.zwrocNazwiskoAutora())){
-				if(najpopularniejsza == null){
+		for (Ksiazka k : this.ksiazki) {
+			if (autor.equals(k.zwrocImionaAutora() + " " + k.zwrocNazwiskoAutora())) {
+				if (najpopularniejsza == null) {
 					najpopularniejsza = k;
-				} else if ( najpopularniejsza.zwrocLiczbeWypozyczen() < k.zwrocLiczbeWypozyczen()){
+				} else if (najpopularniejsza.zwrocLiczbeWypozyczen() < k.zwrocLiczbeWypozyczen()) {
 					najpopularniejsza = k;
 				}
 			}
@@ -487,26 +478,24 @@ public class Biblioteka {
 
 	// OPERACJE NA PLIKU Z DANYMI
 
-	private void zapisDoPliku(Ksiazka k){
+	private void zapisDoPliku(Ksiazka k) {
 
 		String dane = this.pobierzDaneDoZapisu(k);
-		try{
-			RandomAccessFile raf = new RandomAccessFile(sciezkaDoPlikuZDanymi, "rw");
+		try (RandomAccessFile raf = new RandomAccessFile(sciezkaDoPlikuZDanymi, "rw")) {
 
 			char[] c = new char[200];
 			Arrays.fill(c, ' ');
 
-			for(int i = 0; i < k.zwrocId(); i++){
+			for (int i = 0; i < k.zwrocId(); i++) {
 				raf.readLine();
 			}
 
-			for(int i = 0; i < c.length; i++){
-				if(i < dane.length()) c[i] = dane.charAt(i);
+			for (int i = 0; i < c.length; i++) {
+				if (i < dane.length()) c[i] = dane.charAt(i);
 				raf.write(c[i]);
 
 			}
-			if(k.zwrocId() == this.ksiazki.size() - 1) raf.writeChar('\n');
-			raf.close();
+			if (k.zwrocId() == this.ksiazki.size() - 1) raf.writeChar('\n');
 		} catch (IOException e) {
 			System.err.println("Błąd I/O");
 			e.printStackTrace();
@@ -522,13 +511,13 @@ public class Biblioteka {
 		int rok = Integer.parseInt(data[2]);
 		String kategorie = data[3].replaceAll(", ", ";");
 		boolean czyWypozyczona;
-		if(data.length >= 5){
+		if (data.length >= 5) {
 			czyWypozyczona = data[4].equals("tak");
 		} else {
 			czyWypozyczona = false;
 		}
 		int liczbaWypozyczen;
-		if(data.length >= 6){
+		if (data.length >= 6) {
 			liczbaWypozyczen = Integer.parseInt(data[5]);
 		} else {
 			liczbaWypozyczen = 0;
@@ -549,7 +538,7 @@ public class Biblioteka {
 		return odczytanaKsiazka;
 	}
 
-	private String pobierzDaneDoZapisu(Ksiazka k){
+	private String pobierzDaneDoZapisu(Ksiazka k) {
 		String[] tabKategorii = k.zwrocKategorie().split(";");
 		for (String kategoria : tabKategorii) {
 			if (!istniejaceKategorie.contains(kategoria)) {
