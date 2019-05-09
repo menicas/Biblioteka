@@ -1,5 +1,7 @@
 package projektbiblioteka;
 
+import sun.plugin.javascript.navig.Array;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -354,69 +356,33 @@ public class Biblioteka {
 	// 0.1
 
 	public Ksiazka[] sortujWgNaziwskaAutora() {
-		Ksiazka[] sortowanieNazwiska = this.ksiazki.toArray(new Ksiazka[ksiazki.size()]);
-		Ksiazka tmp;
-		for (int i = 0; i < sortowanieNazwiska.length - 1; i++) {
-			for (int j = 0; j < sortowanieNazwiska.length - 1; j++) {
-				if (sortowanieNazwiska[j].zwrocNazwiskoAutora().compareTo(sortowanieNazwiska[j + 1].zwrocNazwiskoAutora()) > 0) {
-					tmp = sortowanieNazwiska[j];
-					sortowanieNazwiska[j] = sortowanieNazwiska[j + 1];
-					sortowanieNazwiska[j + 1] = tmp;
-				}
-			}
-		}
-		return sortowanieNazwiska;
+		Ksiazka[] posortowane = this.ksiazki.toArray(new Ksiazka[ksiazki.size()]);
+		Arrays.sort(posortowane, (k1, k2) -> k2.zwrocTytul().compareTo(k1.zwrocTytul()));
+		return posortowane;
 	}
 
 	// 0.2
 
 	public Ksiazka[] sortujWgRokuWydania() {
-		Ksiazka[] sortowanieRokWydania = this.ksiazki.toArray(new Ksiazka[ksiazki.size()]);
-		Ksiazka tmp;
-		for (int i = 0; i < sortowanieRokWydania.length - 1; i++) {
-			for (int j = 0; j < sortowanieRokWydania.length - 1; j++) {
-				if (sortowanieRokWydania[j].zwrocRok() < sortowanieRokWydania[j + 1].zwrocRok()) {
-					tmp = sortowanieRokWydania[j];
-					sortowanieRokWydania[j] = sortowanieRokWydania[j + 1];
-					sortowanieRokWydania[j + 1] = tmp;
-				}
-			}
-		}
-		return sortowanieRokWydania;
+		Ksiazka[] posortowane = this.ksiazki.toArray(new Ksiazka[ksiazki.size()]);
+		Arrays.sort(posortowane, (k1, k2) -> k2.zwrocRok() - k1.zwrocRok());
+		return posortowane;
 	}
 
 	// 0.3
 
 	public Ksiazka[] sortujWgLiczbyWypozyczen() {
-		Ksiazka[] sortowanieLiczbaWypozyczen = this.ksiazki.toArray(new Ksiazka[ksiazki.size()]);
-		Ksiazka tmp;
-		for (int i = 0; i < sortowanieLiczbaWypozyczen.length - 1; i++) {
-			for (int j = 0; j < sortowanieLiczbaWypozyczen.length - 1; j++) {
-				if (sortowanieLiczbaWypozyczen[j].zwrocLiczbeWypozyczen() < sortowanieLiczbaWypozyczen[j + 1].zwrocLiczbeWypozyczen()) {
-					tmp = sortowanieLiczbaWypozyczen[j];
-					sortowanieLiczbaWypozyczen[j] = sortowanieLiczbaWypozyczen[j + 1];
-					sortowanieLiczbaWypozyczen[j + 1] = tmp;
-				}
-			}
-		}
-		return sortowanieLiczbaWypozyczen;
+		Ksiazka[] posortowane = this.ksiazki.toArray(new Ksiazka[ksiazki.size()]);
+		Arrays.sort(posortowane, (k1, k2) -> k2.zwrocLiczbeWypozyczen() - k1.zwrocLiczbeWypozyczen());
+		return posortowane;
 	}
 
 	// 0.4
 
 	public Ksiazka[] sortujWgTytulu() {
-		Ksiazka[] sortowanieTytul = this.ksiazki.toArray(new Ksiazka[ksiazki.size()]);
-		Ksiazka tmp;
-		for (int i = 0; i < sortowanieTytul.length - 1; i++) {
-			for (int j = 0; j < sortowanieTytul.length - 1; j++) {
-				if (sortowanieTytul[j].zwrocTytul().compareTo(sortowanieTytul[j + 1].zwrocTytul()) > 0) {
-					tmp = sortowanieTytul[j];
-					sortowanieTytul[j] = sortowanieTytul[j + 1];
-					sortowanieTytul[j + 1] = tmp;
-				}
-			}
-		}
-		return sortowanieTytul;
+		Ksiazka[] posortowane = this.ksiazki.toArray(new Ksiazka[ksiazki.size()]);
+		Arrays.sort(posortowane, (k1, k2) -> k1.zwrocTytul().compareTo(k2.zwrocTytul()));
+		return posortowane;
 	}
 
 	// ---------------------------------------------- METODY POMOCNICZE ----------------------------------------------
