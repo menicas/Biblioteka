@@ -1,7 +1,5 @@
 package projektbiblioteka;
 
-import sun.plugin.javascript.navig.Array;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -357,7 +355,7 @@ public class Biblioteka {
 
 	public Ksiazka[] sortujWgNaziwskaAutora() {
 		Ksiazka[] posortowane = this.ksiazki.toArray(new Ksiazka[ksiazki.size()]);
-		Arrays.sort(posortowane, (k1, k2) -> k2.zwrocTytul().compareTo(k1.zwrocTytul()));
+		Arrays.sort(posortowane, Comparator.comparing(Ksiazka::zwrocNazwiskoAutora));
 		return posortowane;
 	}
 
@@ -381,7 +379,7 @@ public class Biblioteka {
 
 	public Ksiazka[] sortujWgTytulu() {
 		Ksiazka[] posortowane = this.ksiazki.toArray(new Ksiazka[ksiazki.size()]);
-		Arrays.sort(posortowane, (k1, k2) -> k1.zwrocTytul().compareTo(k2.zwrocTytul()));
+		Arrays.sort(posortowane, Comparator.comparing(Ksiazka::zwrocTytul));
 		return posortowane;
 	}
 
